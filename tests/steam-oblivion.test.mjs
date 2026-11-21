@@ -34,20 +34,26 @@ test('classic EXE inspection bounds PE addresses and reads real import tables wi
  assert.throws(()=>inspectPEBytes(bytes.subarray(0,100)),/incomplete/);assert.equal(adler32(new TextEncoder().encode('hello')),0x062c0215);
 });
 test('windowed Steam profile imports genuine installation metadata and only owned DLC into an isolated Wine profile',async()=>{
- const records=planOblivionImport(steamFiles()).records,defaults=records.find(r=>r.path.endsWith('Oblivion_default.ini'));defaults.file=file('Oblivion_default.ini','[General]\nsLanguage=GERMAN\n[Display]\nbFullScreen=1\niSize W=1920\niSize H=1080\ncustomOption=keep\n[Archive]\nsArchiveList=old\n');
+ const records=planOblivionImport(steamFiles()).records,defaults=records.find(r=>r.path.endsWith('Oblivion_default.ini'));defaults.file=file('Oblivion_default.ini','[General]\nsLanguage=GERMAN\nSIntroSequence=intro.bik\nSOblivionIntro=Oblivion iv logo.bik\n[Display]\nbFull Screen=1\nbFullScreen=1\nbDoHighDynamicRange=1\niSize W=1920\niSize H=1080\ncustomOption=keep\n[BlurShaderHDR]\nbDoHighDynamicRange=1\n[BlurShader]\nbUseBlurShader=1\n[Archive]\nsArchiveList=old\n');
  const writes=new Map(),dirs=[],fs={mkdirTree:p=>dirs.push(p),writeFile:(p,b)=>writes.set(p,b)},profile=await prepareSteamProfile(fs,records,{headless:true});
  assert.deepEqual(profile.registryCommand,['reg','import','D:\\LiteOSProfile\\install.reg']);assert.deepEqual(profile.plugins,['Oblivion.esm','Knights.esp']);assert.equal(profile.usedGameDefaults,true);
- const ini=writes.get('/d_drive/LiteOSProfile/Documents/My Games/Oblivion/Oblivion.ini');assert.match(ini,/sLanguage=GERMAN/);assert.match(ini,/customOption=keep/);assert.match(ini,/bFullScreen=0/);assert.match(ini,/iSize W=640/);assert.match(ini,/bSoundEnabled=0/);assert.match(ini,/sArchiveList=Oblivion - Meshes.bsa/);
+ const ini=writes.get('/d_drive/LiteOSProfile/Documents/My Games/Oblivion/Oblivion.ini');assert.match(ini,/sLanguage=GERMAN/);assert.match(ini,/customOption=keep/);assert.match(ini,/bFull Screen=0/);assert.doesNotMatch(ini,/bFullScreen=/i);assert.match(ini,/iSize W=640/);assert.match(ini,/bSoundEnabled=0/);assert.match(ini,/sArchiveList=Oblivion - Meshes.bsa/);
+ const section=name=>ini.split('['+name+']')[1].split(/\r\n\[/)[0];
+ assert.doesNotMatch(section('Display'),/bDoHighDynamicRange/);assert.match(section('BlurShaderHDR'),/bDoHighDynamicRange=0/);assert.match(section('BlurShader'),/bUseBlurShader=0/);
+ assert.match(section('Display'),/bAllow30Shaders=0/);assert.match(section('Display'),/bForce1XShaders=0/);assert.match(section('Display'),/bUse Shaders=1/);
+ for(const key of ['SCreditsMenuMovie','SMainMenuMovieIntro','SMainMenuMovie','SIntroSequence'])assert.ok(section('General').split('\r\n').includes(key+'='));
+ assert.match(ini,/SOblivionIntro=Oblivion iv logo.bik/);assert.equal(profile.startupMovies,false);
  const reg=new TextDecoder('utf-16le').decode(writes.get('/d_drive/LiteOSProfile/install.reg'));assert.match(reg,/HKEY_LOCAL_MACHINE\\Software\\Bethesda Softworks\\Oblivion/);assert.ok(reg.includes('"Installed Path"="D:\\\\Oblivion\\\\"'));assert.ok(!/Valve|SteamApp|license/i.test(reg));assert.ok(![...writes.keys()].some(p=>/Oblivion\.exe|steam_appid\.txt$/i.test(p)));
  assert.equal(writes.get('/d_drive/LiteOSProfile/AppData/Local/Oblivion/Plugins.txt'),'Oblivion.esm\r\nKnights.esp\r\n');assert.ok(dirs.some(p=>p.endsWith('/Saves')));
  const withoutDlc=await prepareSteamProfile(fs,records,{enableDlc:false});assert.deepEqual(withoutDlc.plugins,['Oblivion.esm']);
 });
-test('INI changes preserve unrelated settings and remove conflicting duplicate targeted keys',()=>{
- const ini=patchIni('[Display]\nbFullScreen=1\nBFULLSCREEN=1\nvalue=unchanged\n[Other]\nvalue=2',{Display:{bFullScreen:0,'iSize W':640}});assert.equal((ini.match(/bfullscreen/gi)||[]).length,1);assert.match(ini,/value=unchanged/);assert.match(ini,/\[Other\]\r\nvalue=2/);
+test('INI changes preserve unrelated settings and remove obsolete or duplicate targeted keys',()=>{
+ const ini=patchIni('[Display]\nbFullScreen=1\nBFULLSCREEN=1\nbFull Screen=1\nBFull Screen=1\nvalue=unchanged\n[Other]\nvalue=2',{Display:{bFullScreen:null,'bFull Screen':0,'iSize W':640},Absent:{removed:null}});assert.doesNotMatch(ini,/bfullscreen/gi);assert.equal((ini.match(/bfull screen/gi)||[]).length,1);assert.match(ini,/value=unchanged/);assert.match(ini,/\[Other\]\r\nvalue=2/);assert.doesNotMatch(ini,/Absent/);
 });
 test('Wine diagnostics distinguish missing bundled files, Steam client failures and graphics failures',()=>{
  assert.equal(classifyWineLine('0108:err:module:import_dll Library binkw32.dll (which is needed by Oblivion.exe) not found').kind,'dependency');
  assert.equal(classifyWineLine('Fatal error: SteamAPI_Init() failed.').kind,'steam-client');assert.equal(classifyWineLine('wined3d: failed to initialize renderer').kind,'graphics');assert.equal(classifyWineLine('Launching Oblivion.exe'),null);
+ assert.equal(classifyWineLine('0110:err:winediag:wined3d_dll_init Using the OpenGL renderer.'),null);assert.equal(classifyWineLine('[MIPS] count=70 raw=30 avg=39'),null);
 });
 test('a selected EXE and Wine ZIP permit one-click Start before manual engine preparation',()=>{
  const selected={authorized:true,hasExe:true,hasRoot:true,ready:false};

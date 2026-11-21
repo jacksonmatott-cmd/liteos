@@ -1,14 +1,15 @@
 import {assertGamePermission} from '/heroes3/profile-access.js';
+import {createDisplayDiagnostics,displaySummary} from './display.js';
 import {launchAvailability} from './launch-state.js';
 import {verifyWineRoot,localRootLoader} from './root-loader.js';
 import {planOblivionImport,stagedSummary,budgetError,SIZE_ACK_BYTES} from './probe-files.js';
 import {steamInstallation,inspectSteamExecutable,prepareSteamProfile,classifyWineLine} from './steam-profile.js';
 const $ = selector => document.querySelector(selector);
 const staged = new Map();
-const state = {authorized:false,loading:false,ready:false,started:false,failed:false,headless:false,rootFile:null,busy:false,exeInfo:null,profileInfo:null,coreStarted:false,expanded:false,launchIssue:null,log:[]};
+const state = {authorized:false,loading:false,ready:false,started:false,failed:false,headless:false,rootFile:null,busy:false,exeInfo:null,profileInfo:null,coreStarted:false,expanded:false,launchIssue:null,displayTest:false,graphicsLoaded:false,cpuActive:false,log:[]};
 const mobile = matchMedia('(pointer: coarse)').matches && innerWidth < 1100;
 const runtimeBase = new URL('./runtime/', location.href);
-let preparation=null,resolvePreparation,rejectPreparation,preparationTimer,launchTimer;
+let preparation=null,resolvePreparation,rejectPreparation,preparationTimer,launchTimer,displayMonitor,displayUpdateTimer;
 
 function log(value) {
   const line = typeof value === 'string' ? value : String(value);
@@ -16,6 +17,9 @@ function log(value) {
   if (state.log.length > 500) state.log.splice(0,state.log.length-500);
   $('#probe-log').textContent = state.log.join('\n');
   $('#probe-log').scrollTop = $('#probe-log').scrollHeight;
+  if(/wined3d_dll_init.*(?:WebGL WineD3D|OpenGL renderer|WebGL-compatible profile)/i.test(line))state.graphicsLoaded=true;
+  if(/\[MIPS\]/.test(line))state.cpuActive=true;
+  scheduleDisplay();
   const issue=classifyWineLine(line);if(issue){state.launchIssue=issue.message;announce(issue.message,true);refreshLaunch();}
 }
 function announce(message,error=false) { $('#probe-status').textContent=message;$('#probe-status').classList.toggle('error',error);if(state.loading||state.busy||state.started)$('#launch-hint').textContent=message; }
@@ -74,7 +78,7 @@ $('#memory-ack').addEventListener('change',refresh);
 $('#clear-selection').addEventListener('click',()=>{staged.clear();state.exeInfo=null;refresh();announce('Selection cleared.');});
 $('#reload-probe').addEventListener('click',()=>location.reload());
 $('#download-log').addEventListener('click',()=>{
-  const blob=new Blob([JSON.stringify({application:'LiteOS Steam classic Oblivion experiment',steamAppId:22330,executable:state.exeInfo,compatibilityProfile:state.profileInfo,runtime:'BoxedWine ST-JIT bf831736',verifiedGameSupport:false,graphicsMode:state.headless?'loader-only-no-display':'webgl2',selection:stagedSummary(staged.values()),messages:state.log},null,2)],{type:'application/json'});
+  const blob=new Blob([JSON.stringify({application:'LiteOS Steam classic Oblivion experiment',steamAppId:22330,executable:state.exeInfo,compatibilityProfile:state.profileInfo,display:displayMonitor?.snapshot(),runtime:'BoxedWine ST-JIT bf831736',verifiedGameSupport:false,graphicsMode:state.headless?'loader-only-no-display':'webgl2',selection:stagedSummary(staged.values()),messages:state.log},null,2)],{type:'application/json'});
   if(parent!==window){parent.postMessage({type:'liteos:oblivion',action:'download',token:new URLSearchParams(location.search).get('token')||'',blob},location.origin);return;}
   const url=URL.createObjectURL(blob),link=document.createElement('a');link.href=url;link.download='LiteOS-Oblivion-diagnostic.json';document.body.appendChild(link);link.click();link.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);
 });
@@ -86,7 +90,7 @@ function refreshLaunch(){
  const summary=stagedSummary(staged.values()),availability=launchAvailability({...state,hasExe:summary.hasExe,hasRoot:!!state.rootFile,memoryError:budgetError(summary.bytes,mobile,$('#memory-ack').checked),issue:state.launchIssue});
  $('#run-probe').disabled=!availability.enabled;$('#run-probe').textContent=availability.label;$('#launch-hint').textContent=availability.hint;
  $('#view-game').hidden=!state.loading&&!state.ready&&!state.started;
- const full=!!(document.fullscreenElement||document.webkitFullscreenElement||state.expanded);$('#fullscreen').textContent=full?'Exit fullscreen':'Fullscreen';$('#fullscreen').setAttribute('aria-pressed',String(full));document.body.classList.toggle('game-fullscreen',full&&state.started);
+ const full=!!(document.fullscreenElement||document.webkitFullscreenElement||state.expanded);$('#fullscreen').textContent=full?'Exit fullscreen':'Fullscreen';$('#fullscreen').setAttribute('aria-pressed',String(full));document.body.classList.toggle('game-fullscreen',full&&(state.started||state.displayTest));refreshDisplay();
 }
 async function loadRuntime(){
  if(state.ready)return;if(preparation)return preparation;
@@ -101,7 +105,8 @@ async function initializeRuntime(){
     await assertGamePermission();
     await assertGamePermission('allowImports');
     if(typeof WebAssembly!=='object')throw Error('This browser does not support WebAssembly.');
-    const canvas=document.createElement('canvas'),hasWebGL=!!canvas.getContext('webgl2');
+    const canvas=document.createElement('canvas'),probe=canvas.getContext('webgl2'),hasWebGL=!!probe;
+    probe?.getExtension('WEBGL_lose_context')?.loseContext();
     state.headless=$('#loader-only').checked||!hasWebGL;
     $('#loader-only').checked=state.headless;$('#loader-only').disabled=true;
     if(!hasWebGL)log('GRAPHICS_NOTE: WebGL 2 is unavailable. Using the documented -novideo/-nosound CPU-only dependency probe; no game display or gameplay can be tested.');
@@ -109,7 +114,7 @@ async function initializeRuntime(){
     announce('Verifying your local Wine system ZIP and loading the browser engine…');
     const rootBytes=await verifyWineRoot(state.rootFile);
     log('Loading pinned BoxedWine browser engine. No Windows PC or game streaming service is used.');
-    await loadScript('fsfs.js');await loadScript('boxedwine-shell.js');
+    await loadScript('fsfs.js');await loadScript('boxedwine-shell.js');displayMonitor.attachModule(Module);
     // Config.urlParams is the upstream shell's supported replacement parameter source.
     // Only fixed runtime options enter it; game filenames are passed through FS below.
     Config.urlParams=new URLSearchParams({root:'wine-root.zip',rootBase:runtimeBase.href,auto:'false',storage:'memory',rootfs:'memory',desktop:'false',registry:state.headless?'gdi,winxp':'gl,winxp','wine-override':'nomono',resolution:'640x480',bpp:'32',sound:state.headless?'false':'true',audioBackend:'sdl'}).toString();
@@ -137,7 +142,7 @@ $('#run-probe').addEventListener('click',async()=>{
   if(!state.authorized||state.started||state.failed||state.busy||state.loading)return;
   const summary=stagedSummary(staged.values()),error=budgetError(summary.bytes,mobile,$('#memory-ack').checked);
   if(error||!summary.hasExe){announce(error||'Select the original Oblivion.exe first.',true);return;}
-  state.busy=true;state.launchIssue=null;refresh();
+  state.busy=true;state.launchIssue=null;state.displayTest=false;displayMonitor.showTest(false);$('#test-display').textContent='Test display';refresh();
   try {
     await inspectSelection();await loadRuntime();
     state.started=true;parentMessage('running');refresh();announce('Importing selected game files into browser memory…');
@@ -174,6 +179,11 @@ $('#fullscreen').addEventListener('click',async()=>{
 for(const name of ['fullscreenchange','webkitfullscreenchange'])document.addEventListener(name,refreshLaunch);
 addEventListener('error',event=>{if((state.loading||state.started)&&!String(event.filename||'').startsWith('chrome-extension:'))fail(event.error||Error(event.message||'A browser engine script stopped.'));});
 addEventListener('unhandledrejection',event=>{if(state.loading||state.started)fail(event.reason instanceof Error?event.reason:Error(String(event.reason)));});
+function scheduleDisplay(){if(displayUpdateTimer)return;displayUpdateTimer=setTimeout(()=>{displayUpdateTimer=null;refreshDisplay();},250);}
+function refreshDisplay(){if(!displayMonitor)return;$('#loading').hidden=!state.loading&&!state.ready&&!state.started;$('#controls').hidden=!state.ready&&!state.started;const info=displayMonitor.snapshot();$('#display-status').textContent=displaySummary(info,state);$('#display-metrics').textContent=`Canvas ${info.canvasBuffer.join(' × ')} pixels · Visible ${info.canvasDisplay.join(' × ')} · Main context ${info.mainContext||'not created'} · Overlay ${info.overlayContext||'not created'} / ${info.overlayVisibility} · Callbacks ${info.softwareCallbacks} software, ${info.bitmapCallbacks} bitmap`+(info.contextErrors.length?' · Context attempts unavailable: '+info.contextErrors.join(', '):'');$('#display-message').hidden=state.displayTest||!state.headless;$('#display-message').textContent='Graphics are disabled in dependency-only mode. This mode can test loading, but cannot display Oblivion.';}
+displayMonitor=createDisplayDiagnostics({canvas:$('#canvas'),overlay:$('#boxedwine-webgl-canvas-0'),testCanvas:$('#display-test'),onChange:scheduleDisplay});
+$('#test-display').addEventListener('click',()=>{try{state.displayTest=!state.displayTest;if(state.displayTest&&document.pointerLockElement)document.exitPointerLock();displayMonitor.showTest(state.displayTest);$('#test-display').textContent=state.displayTest?'Back to game':'Test display';$('#probe-runtime').hidden=false;refreshLaunch();$('#probe-runtime').scrollIntoView({block:'start',behavior:'smooth'});}catch(error){state.displayTest=false;announce(error.message,true);}});
+$('#display-layer').addEventListener('change',event=>{displayMonitor.setLayer(event.target.value);refreshDisplay();});
 log('Experimental Steam classic compatibility profile. No verified Oblivion gameplay support.');refresh();
 
 function parentMessage(action){if(parent!==window)parent.postMessage({type:'liteos:oblivion',action,token:new URLSearchParams(location.search).get('token')||''},location.origin);}
