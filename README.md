@@ -14,8 +14,8 @@ This is a **browser OS prototype**, not a bootable kernel or a Windows virtual m
 - Lite Notes: edit and save plain text and `.lite` scripts, download documents, and protect unsaved work.
 - Lite Assistant: server-connected Ollama, Groq, or Gemini, with local LiteOS help in guest mode. AI cannot silently access your files or act on your behalf.
 - Lite Terminal: bounded LiteScript interpreter with quoted paths, variables, file operations, and app launching. No host shell or JavaScript eval.
-- Lite Paint, Photos, Calculator, Mines, and pass-and-play Tic-tac-toe.
-- Lite Store: install web shortcuts as `.liteapp` files. Open HTML apps inside an isolated sandbox.
+- Lite Apps launcher, Lite Write documents with formatting and preview, Lite Sheets with formulas and CSV import/export, Lite Paint, Photos, Calculator, Mines, and pass-and-play Tic-tac-toe.
+- Lite Apps: import or create single-file HTML apps, run the included Little Counter demo, and keep apps running while opening Start or minimizing their window. Lite Store installs `.liteapp` web manifests; compatible apps such as Photopea open inside LiteOS, while sites that block embedding open in a normal browser tab.
 - Settings: wallpapers, custom photos, light/dark/device theme, accent colors, transparency, large text, high contrast, reduced motion, lock duration, session management, family accounts, group policies, share expiry, upload limits, privacy information, network checks, and audit export.
 - Parent and child accounts with separate private file spaces. Children cannot use cloud AI or create public shares by default.
 - **Settings → System → Danger** has one button, **Clear Browser Data**, which requires password approval from a parent in the same family. It clears LiteOS data on this browser and signs out its session. It does not delete cloud files or another website’s data.
@@ -79,6 +79,26 @@ Guest mode works immediately and stores files in IndexedDB. Choose the profile i
 
 Family policies are stored on the server. AI, file-import, and public-sharing restrictions are checked on every corresponding request; disabling sharing also disables existing links. Terminal and external-app restrictions govern the LiteOS interface and cannot restrict the phone’s browser or the underlying operating system. Family roles do not grant parents read access to another member’s private files.
 
+## Apps that run inside LiteOS
+
+Open **Lite Apps** on the desktop or Start screen. These run as actual tools inside LiteOS windows:
+
+| App | What works |
+| --- | --- |
+| Lite Write | Markdown documents, bold/italic/headings/lists, formatted preview, save and export `.md` files |
+| Lite Sheets | 8 columns × 24 rows, cell references, arithmetic, `SUM`, `AVERAGE`, `MIN`, `MAX`, save `.litesheet`, import/export CSV |
+| Google | Start Google searches inside LiteOS and open official search results, Gmail, Drive, Docs, and Maps in a browser tab |
+| Lite Notes | Plain text and LiteScript editing |
+| Lite Paint / Photos | Drawing, saved PNGs, pictures, backgrounds |
+| Lite Calculator / Games | Arithmetic, Mines, Tic-tac-toe |
+| Imported HTML apps | Inline HTML/CSS/JavaScript in an isolated app window; try **Run demo** |
+
+**Import app** accepts `.html`, `.htm`, and `.liteapp` files into `L:/Home/Apps`. **Create HTML app** includes an editable starter app. HTML app windows retain their running state while you open Start, switch windows, or minimize them; closing or restarting ends that app session. Use **Edit code** to change an HTML app, save, then **Restart app** to load the changes. The sandbox does not grant imported code access to LiteOS account cookies, storage, or cloud-file APIs.
+
+Google’s search window uses normal links and a standard Google search form, so launching does not depend on asynchronous pop-ups. Search results and Google sign-in remain in a normal browser tab; LiteOS does not claim to embed the Google website.
+
+Lite Sheets preserves formulas in its own file format and exports calculated values to CSV. It detects circular references and invalid formulas, and never evaluates JavaScript. Larger CSVs are rejected with a size explanation rather than silently truncated. It is a basic spreadsheet, not an Excel workbook engine; `.xlsx` and `.docx` support is not included.
+
 ## LiteFS
 
 | Path | Purpose |
@@ -115,7 +135,7 @@ Save a JSON manifest under `L:/Home/Apps/My app.liteapp`:
 {"name":"My app","url":"https://example.com","mode":"external"}
 ```
 
-`external` opens a separate tab. `embedded` runs an HTTPS site in a sandbox without same-origin access to LiteOS; the site must support embedding. Imported HTML runs with scripts and forms in an opaque sandbox, with no same-origin access, popups, or top-level navigation. Not all third-party apps are compatible.
+`external` opens a separate tab. `embedded` runs an HTTPS site in a sandbox without same-origin access to LiteOS; the site must support embedding. Standalone imported HTML runs inside its own LiteOS window with inline JavaScript and CSS. Its sandbox has an opaque origin, cannot access LiteOS files or accounts, and blocks network requests, external scripts, forms, popups, and top-level navigation. User-triggered downloads are allowed. Keep required code and data inside the single HTML file. Not all third-party apps are compatible.
 
 ## Security integration and prototype limits
 

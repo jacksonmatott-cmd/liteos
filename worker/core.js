@@ -1,4 +1,5 @@
 export const VERSION = '0.1.0';
+export function sandboxPolicy(){return `default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-scripts allow-downloads`;}
 export const DEFAULT_POLICIES = Object.freeze({allowAI:true,allowSharing:true,allowTerminal:true,allowExternalApps:true,allowImports:true,requirePassword:true,shareExpiryHours:24,maxUploadMB:20,autoLockMinutes:15,childAI:false,childSharing:false,childExternalApps:false});
 export class HttpError extends Error { constructor(status,message){super(message);this.status=status;} }
 export const uid=()=>crypto.randomUUID();

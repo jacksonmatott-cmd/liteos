@@ -1,4 +1,11 @@
 const paths={
+google:'<path d="M20 7a9 9 0 1 0 1 7h-9v-4h10"/>',
+
+apps:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+write:'<path d="M5 3h14v18H5zM8 7h8M8 11h8M8 15h4"/><path d="m14 16 5-5 2 2-5 5-3 1z"/>',
+sheets:'<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/>',
+apphost:'<rect x="2" y="3" width="20" height="18" rx="2"/><path d="M2 8h20M6 5.5h.01M9 5.5h.01m-1 7-2 2 2 2m8-4 2 2-2 2"/>',
+
 home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',
 files:'<path d="M3 6h7l2 3h9v11H3z"/><path d="M3 10V5h7l2 3h8"/>',
 folder:'<path d="M2 6h8l2 3h10l-2 11H2z"/><path d="M2 9h20"/>',

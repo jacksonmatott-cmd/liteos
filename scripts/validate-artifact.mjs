@@ -23,3 +23,18 @@ assert.equal(
 );
 
 console.log("Artifact is valid ESM and exports default.fetch");
+
+// The app runner can execute inline code only inside its separate opaque sandbox.
+// The desktop keeps its original script policy.
+const sandboxResponse = await workerModule.default.fetch(new Request('https://liteos.test/sandbox.html'), {}, {});
+const desktopResponse = await workerModule.default.fetch(new Request('https://liteos.test/'), {}, {});
+assert.equal(sandboxResponse.status, 200);
+assert.equal(desktopResponse.status, 200);
+const sandboxCSP = sandboxResponse.headers.get('content-security-policy');
+const desktopCSP = desktopResponse.headers.get('content-security-policy');
+assert.match(sandboxCSP, /sandbox allow-scripts allow-downloads/);
+assert.match(sandboxCSP, /connect-src 'none'/);
+assert.ok(!sandboxCSP.includes('allow-same-origin'));
+assert.match(sandboxCSP, /script-src 'unsafe-inline'/);
+assert.ok(!/script-src[^;]*'unsafe-inline'/.test(desktopCSP));
+console.log('App sandbox and desktop script policies are isolated');

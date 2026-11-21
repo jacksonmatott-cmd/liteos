@@ -1,0 +1,13 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>LiteOS app sandbox</title></head><body><p>Starting your app…</p><script>
+(()=>{
+ const parentOrigin=new URL(location.href).origin,token=location.hash.slice(1);
+ if(parent===window){document.body.textContent='Open this app from LiteOS.';return;}
+ function launch(event){
+  if(event.source!==parent||event.origin!==parentOrigin||event.data?.type!=='liteos:launch'||event.data.token!==token||typeof event.data.html!=='string')return;
+  removeEventListener('message',launch);
+  document.open();document.write(event.data.html);document.close();
+ }
+ addEventListener('message',launch);
+ parent.postMessage({type:'liteos:sandbox-ready',token},parentOrigin);
+})();
+</script></body></html>
