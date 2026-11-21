@@ -1,0 +1,12 @@
+{
+  "heroes3-source.tar.gz": {
+    "url": "https://codeload.github.com/mihaicristianfarcas/homm3-browser/tar.gz/refs/tags/v0.1.0",
+    "bytes": 18348227,
+    "sha256": "ec5946f276c34dc70d19ba7b445ef29ae2714849a937aa00a78b8ddaa7f1469d"
+  },
+  "boxedwine-source.tar.gz": {
+    "url": "https://codeload.github.com/danoon2/Boxedwine/tar.gz/bf83173605148c73780069e9afa452cc05cb7191",
+    "bytes": 23678177,
+    "sha256": "f24eab342a05433785018af60238a4914373195d0a26f3f799dc6f288260775a"
+  }
+}

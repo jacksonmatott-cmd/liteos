@@ -1,0 +1,11 @@
+{
+  "engine": "VCMI 1.7.5 / homm3-browser v0.1.0",
+  "archive": "https://github.com/mihaicristianfarcas/homm3-browser/releases/download/v0.1.0/homm3-browser.tar.gz",
+  "archiveSha256": "e58d0d64b387ead8c5a379eab4f71840b19c9bda4895c0d5925d80e9d84ffd91",
+  "source": "https://github.com/mihaicristianfarcas/homm3-browser/tree/v0.1.0",
+  "files": {
+    "vcmiclient.js": {"size":240909,"sha256":"8361f4d6c49e1fcd49fef1f053f2508561c1abeb8acacfff6e5bcb85635da10e","type":"application/javascript; charset=utf-8"},
+    "vcmiclient.wasm": {"size":21366506,"sha256":"2c328d97af4105a840aac13524ae0706e8c7a98d6fbaa24121b713a2e130e5f3","type":"application/wasm"},
+    "vcmiclient.data": {"size":8705183,"sha256":"60b67e978c9e03a9949c308f9d7177bc4cbd96d3ff284fd93fd5816817e14a87","type":"application/octet-stream"}
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "source_commit": "bf83173605148c73780069e9afa452cc05cb7191",
+  "source_repository": "https://github.com/danoon2/Boxedwine",
+  "candidate_build_base": "https://boxedwine.org/builds/demos/build/james__wasm_st_alpha_fix/1/st-jit/",
+  "files": [
+    {
+      "path": "runtime/boxedwine-shell.js",
+      "url": "https://boxedwine.org/builds/demos/build/james__wasm_st_alpha_fix/1/st-jit/boxedwine-shell.js",
+      "bytes": 161999,
+      "sha256": "294ab95775417afb92232ad5dc9c7eae9d1d4fc4c04a19070e9a5e2be4e9498b"
+    },
+    {
+      "path": "runtime/boxedwine.css",
+      "url": "https://raw.githubusercontent.com/danoon2/Boxedwine/bf83173605148c73780069e9afa452cc05cb7191/project/emscripten/boxedwine.css",
+      "bytes": 5277,
+      "sha256": "29d569dbe07dcafb23e2e08ddeae3a36386442a023de63bf9b86ac98f66072b2"
+    },
+    {
+      "path": "runtime/boxedwine.html",
+      "url": "https://boxedwine.org/builds/demos/build/james__wasm_st_alpha_fix/1/st-jit/boxedwine.html",
+      "bytes": 2603,
+      "sha256": "300caa81e6007a180f540b6e0ce905e95c22d45b0c060853fd2765768cc22d7b"
+    },
+    {
+      "path": "runtime/boxedwine.js",
+      "url": "https://boxedwine.org/builds/demos/build/james__wasm_st_alpha_fix/1/st-jit/boxedwine.js",
+      "bytes": 325650,
+      "sha256": "96a602657b45e712581c0d8487b40a9c48d0fdd04de3f914aecb2d82469ac429"
+    },
+    {
+      "path": "runtime/boxedwine.wasm",
+      "url": "https://boxedwine.org/builds/demos/build/james__wasm_st_alpha_fix/1/st-jit/boxedwine.wasm",
+      "bytes": 4421211,
+      "sha256": "275bd922586f33150012f9f3674ebe10f477e84f700e5e8b8177200b4b2e3ca1"
+    },
+    {
+      "path": "runtime/fsfs.js",
+      "url": "https://raw.githubusercontent.com/danoon2/Boxedwine/bf83173605148c73780069e9afa452cc05cb7191/project/emscripten/fsfs.js",
+      "bytes": 29741,
+      "sha256": "fb14cee0e5f7b446cd7cdd9a5f5cc64dace40012e7bdae63719bc89508157caa"
+    }
+  ],
+  "filesystem": {
+    "upstream_url": "https://boxedwine.org/v2/41/TinyCore15Wine11.0-web.zip",
+    "bytes": 96509852,
+    "sha256": "d950fe71d6c078e7218a143f675fde80f80e5c451a8c07a43d6425302be900c0",
+    "verification": "The browser verifies the selected original vendor ZIP against its full byte length and SHA-256 before loading. This ZIP is not mirrored, proxied, or redistributed by LiteOS.",
+    "load_mode": "user-selected-local-file"
+  }
+}

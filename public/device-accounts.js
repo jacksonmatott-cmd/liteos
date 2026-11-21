@@ -5,7 +5,7 @@ const id = () => crypto.randomUUID();
 const hex = value => Array.from(new Uint8Array(value), b => b.toString(16).padStart(2, '0')).join('');
 const tokenDigest = async token => hex(await crypto.subtle.digest('SHA-256',encode.encode(token)));
 const fail = (message, status = 400) => { throw Object.assign(Error(message), {status}); };
-export const DEVICE_POLICIES = Object.freeze({allowAI:true,allowSharing:true,allowTerminal:true,allowExternalApps:true,allowImports:true,childAI:false,childSharing:false,childExternalApps:false,maxUploadMB:20,autoLockMinutes:15});
+export const DEVICE_POLICIES = Object.freeze({allowAI:true,allowSharing:true,allowTerminal:true,allowExternalApps:true,allowImports:true,allowGameRuntime:true,childGames:false,childAI:false,childSharing:false,childExternalApps:false,maxUploadMB:20,autoLockMinutes:15});
 export async function passwordHash(password, salt) {
   const key = await crypto.subtle.importKey('raw', encode.encode(password), 'PBKDF2', false, ['deriveBits']);
   return hex(await crypto.subtle.deriveBits({name:'PBKDF2',salt:encode.encode(salt),iterations:210000,hash:'SHA-256'},key,256));
@@ -19,7 +19,7 @@ export function devicePath(value) {
 const password = p => { if (typeof p !== 'string' || p.length < 8 || p.length > 200) fail('Use a password between 8 and 200 characters.'); };
 const username = n => { n = String(n || '').trim().toLowerCase(); if (!/^[a-z0-9_]{3,30}$/.test(n)) fail('Use 3–30 letters, numbers, or underscores.'); return n; };
 const publicUser = u => ({id:u.id,username:u.username,display_name:u.display_name,role:u.role,household_id:u.household_id,preferences:u.preferences || {}});
-const policy = (u, pol, feature) => { if (pol[feature] === false || u.role === 'child' && ({allowAI:'childAI',allowSharing:'childSharing',allowExternalApps:'childExternalApps'}[feature]) && !pol[{allowAI:'childAI',allowSharing:'childSharing',allowExternalApps:'childExternalApps'}[feature]]) fail('A parent has restricted this action.',403); };
+const policy = (u, pol, feature) => { if (pol[feature] === false || u.role === 'child' && ({allowAI:'childAI',allowSharing:'childSharing',allowExternalApps:'childExternalApps',allowGameRuntime:'childGames'}[feature]) && !pol[{allowAI:'childAI',allowSharing:'childSharing',allowExternalApps:'childExternalApps',allowGameRuntime:'childGames'}[feature]]) fail('A parent has restricted this action.',403); };
 
 export class DeviceAccounts {
   constructor({get,set,seed,getToken,setToken,clock=Date.now,device='This browser',lock,restore}) {

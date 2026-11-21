@@ -21,3 +21,7 @@
 .embedded-browser{display:flex;flex-direction:column;height:100%;min-height:0;background:#fff}.browser-toolbar{display:flex;gap:6px;align-items:center;padding:9px;background:var(--surface,#f5f7fa);border-bottom:1px solid var(--border,#e7e9ef)}.browser-toolbar .input{min-width:0;flex:1;font-size:13px;border-radius:18px}.browser-frame{display:block;flex:1;width:100%;min-height:0;border:0;background:white}.browser-status{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:6px 12px;border-top:1px solid var(--border,#e7e9ef);background:var(--surface,#f5f7fa);font-size:11px;color:var(--muted,#64748b)}.browser-status span{display:flex;align-items:center;gap:5px}.browser-status svg{width:13px;height:13px}.browser-status .text-button{font-size:11px;padding:2px}.browser-toolbar .icon-button{flex-shrink:0}@media(max-width:600px){.browser-toolbar{padding:7px 5px;gap:3px}.browser-toolbar .input{font-size:13px}.browser-status{font-size:10px;padding:5px 8px}}
 
 .backup-actions{display:flex;flex-wrap:wrap;gap:8px}
+
+.heroes-frame{display:block;width:100%;height:100%;border:0;background:#f5f7fb}.app-tile.heroes3{background:linear-gradient(145deg,#254c79,#3077ac);color:#f7df9d}.desktop-icons:has(.app-tile.heroes3){gap:10px}@media(max-height:780px) and (min-width:601px){.desktop-icons{display:grid;grid-auto-flow:column;grid-template-rows:repeat(4,83px);width:180px;gap:4px!important}.desktop-shortcut{width:80px}}
+
+.app-tile.oblivion{background:linear-gradient(150deg,#48335e,#9b7b6b);color:#f8e9c1}

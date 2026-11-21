@@ -36,7 +36,7 @@ test('family policies, reauthentication, approval expiry and one-use clearing',a
  await e.call('/auth/logout');await e.call('/auth/login',{username:'child',password:'Child-password-123'});
  await assert.rejects(()=>e.call('/family',null,'GET'),/parent/);
  await assert.rejects(()=>e.call('/feature',{feature:'allowAI'}),/restricted/);
- await assert.rejects(()=>e.call('/feature',{feature:'allowSharing'}),/restricted/);
+ await assert.rejects(()=>e.call('/feature',{feature:'allowSharing'}),/restricted/);await assert.rejects(()=>e.call('/feature',{feature:'allowGameRuntime'}),/restricted/);
  await assert.rejects(()=>e.call('/files/import',new FormData()),/restricted/);
  await assert.rejects(()=>e.call('/policies',{parentPassword:'Child-password-123',policies:{childAI:true}},'PATCH'),/parent/);
  await assert.rejects(()=>e.call('/clear-browser-data',{}),/approval/);

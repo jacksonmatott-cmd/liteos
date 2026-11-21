@@ -1,0 +1,32 @@
+LiteOS Heroes III browser integration — 2026-11-21
+
+Runtime: VCMI 1.7.5 / homm3-browser v0.1.0.
+The engine binaries are from mihaicristianfarcas/homm3-browser, released under
+GPL-2.0-or-later. VCMI is copyright its contributors, 2007 onward. The LiteOS
+Heroes III interface, import/storage helpers, and engine scoping wrapper are
+provided under GPL-2.0-or-later. See heroes3-GPL-2.0.txt.
+
+Corresponding engine source archive (served alongside the engine):
+/runtimes/sources/heroes3-source.tar.gz
+SHA-256 ec5946f276c34dc70d19ba7b445ef29ae2714849a937aa00a78b8ddaa7f1469d
+
+Upstream source and build instructions:
+https://github.com/mihaicristianfarcas/homm3-browser/tree/v0.1.0
+https://github.com/mihaicristianfarcas/homm3-browser/releases/tag/v0.1.0
+https://github.com/vcmi/vcmi
+
+VCMI's own assets are CC-BY-SA 4.0:
+https://github.com/vcmi/vcmi-assets
+https://creativecommons.org/licenses/by-sa/4.0/
+Source trees retain third-party dependency credits and licenses.
+
+The upstream JS, WASM and .data bytes are verified against runtime-manifest.json
+by the LiteOS build. A small declared JavaScript prefix scopes the engine's
+origin-private file access to one LiteOS profile and library version. The
+engine/game mechanics are unchanged. LiteOS configures local play and disables
+the upstream online lobby. The complete integration source and reproducible
+build scripts are in https://github.com/jacksonmatott-cmd/liteos.
+
+Original Heroes III commercial files are not included or uploaded. Supply an
+owned Complete / Shadow of Death installation. Heroes of Might and Magic is a
+trademark of its respective rights holders; this project is unaffiliated.

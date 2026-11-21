@@ -12,5 +12,10 @@
   },
   "dev": {
     "inspector_port": 9230
+  },
+  "assets": {
+    "directory": "dist/client",
+    "binding": "GAME_ASSETS",
+    "run_worker_first": true
   }
 }

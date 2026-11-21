@@ -1,4 +1,4 @@
-const paths={
+const paths={oblivion:'<path d="M12 2c-4 0-7 6-7 12 0 5 3 8 7 8s7-3 7-8c0-6-3-12-7-12Z"/><path d="M9 18c-1-4 0-9 3-12 3 3 4 8 3 12M8 18h8"/>',heroes3:'<path d="M4 3h3v4h3V3h4v4h3V3h3v7l-3 3v6H7v-6l-3-3zM5 21h14M10 19v-4h4v4"/>',
 google:'<path d="M20 7a9 9 0 1 0 1 7h-9v-4h10"/>',
 
 apps:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',

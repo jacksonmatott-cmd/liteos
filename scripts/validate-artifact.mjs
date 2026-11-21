@@ -38,3 +38,12 @@ assert.ok(!sandboxCSP.includes('allow-same-origin'));
 assert.match(sandboxCSP, /script-src 'unsafe-inline'/);
 assert.ok(!/script-src[^;]*'unsafe-inline'/.test(desktopCSP));
 console.log('App sandbox and desktop script policies are isolated');
+
+const gameResponse=await workerModule.default.fetch(new Request('https://liteos.test/game-mode'),{},{});const libraryResponse=await workerModule.default.fetch(new Request('https://liteos.test/heroes3/'),{},{});assert.equal(gameResponse.status,200);assert.equal(libraryResponse.status,200);assert.equal(gameResponse.headers.get('cross-origin-opener-policy'),'same-origin');assert.equal(gameResponse.headers.get('cross-origin-embedder-policy'),'require-corp');assert.equal(desktopResponse.headers.get('cross-origin-embedder-policy'),null);assert.match(libraryResponse.headers.get('content-security-policy'),/wasm-unsafe-eval/);console.log('Game workspace isolation is separate from normal web browsing.');
+
+const experiment=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/index.html'),{},{});
+assert.equal(experiment.status,200);assert.equal(experiment.headers.get('cross-origin-embedder-policy'),'require-corp');assert.match(experiment.headers.get('content-security-policy'),/wasm-unsafe-eval/);
+assert.match(await experiment.text(),/Choose Wine system ZIP/);
+const sourceHead=await workerModule.default.fetch(new Request('https://liteos.test/runtimes/sources/boxedwine-source.tar.gz',{method:'HEAD'}),{},{});assert.equal(sourceHead.status,200);assert.equal(sourceHead.headers.get('content-length'),'23678177');
+const absentRoot=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/oblivion/wine-root.zip'),{},{});assert.equal(absentRoot.status,404);
+console.log('Experimental engine isolation, source access, and local-only Wine root are valid.');

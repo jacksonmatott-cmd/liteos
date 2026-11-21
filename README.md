@@ -1,4 +1,4 @@
-# LiteOS 0.2 — Device edition
+# LiteOS 0.3 — Games on your device
 
 **A little lighter. A lot more you.**
 
@@ -9,11 +9,31 @@ LiteOS is a Windows-inspired browser desktop for computers, tablets, and phones.
 - Desktop windows, Start screen, taskbar, search, lock screen, touch layout, custom backgrounds, themes, and accessibility settings.
 - **Google inside LiteOS:** Google and Lite Browser open an actual Google webpage in an embedded browser window. The LiteOS address bar searches in that same frame. Focus, Start, minimize, and restore preserve the frame. This uses Google's currently frame-compatible `webhp?igu=1` / `search?igu=1` views, not a screenshot, proxy, or a replacement search launcher. Google can change these views or show a bot check. Some destinations and Google sign-in block framing; the help button offers a separately opened tab when needed. Native Chrome is not installed or executed.
 - Lite Write, Sheets with formulas and CSV import/export, Notes, Files, Paint, Photos, Calculator, Mines, and Tic-tac-toe run inside LiteOS.
-- Single-file HTML apps run in an isolated, offline sandbox. Compatible HTTPS web apps can also be embedded. An App Center includes a working Counter demo and an HTML app editor. Windows EXE/MSI files and Steam games can be stored and downloaded; they need a compatible remote Windows host to execute.
+- Single-file HTML apps run in an isolated, offline sandbox. Compatible HTTPS web apps can also be embedded. An App Center includes a working Counter demo and an HTML app editor. Heroes III has a dedicated browser engine described below. Original Oblivion has an experimental dependency probe. Other Windows EXE/MSI files and Steam games can be stored and downloaded; general native execution requires a compatible remote Windows host.
 - LiteFS folders, import, rename, preview, downloads, Recycle Bin, restore, permanent deletion, and batch-inspired LiteScript commands.
 - Password-protected local parent and child profiles with separate file spaces. Passwords use salted PBKDF2-SHA256 hashes (210,000 iterations). There are no built-in passwords. Local profiles do not authenticate to GitHub or Google.
-- Parent-approved group policy changes and a local audit log for security-tool exports. Children have AI, Share, and external websites disabled by default. These are LiteOS interface controls; someone who administers the browser or device can inspect or change local storage. They do not manage Windows Group Policy, antivirus, a firewall, or the rest of the device.
-- **Settings → System → Danger** contains one button, **Clear Browser Data**. A same-family parent must enter their password. A one-use approval expires after 60 seconds. This removes **all LiteOS profiles and files on that browser**, plus its LiteOS preferences and cookies. It cannot clear other sites or the browser's entire history.
+- Parent-approved group policy changes and a local audit log for security-tool exports. Children have AI, Share, external websites, and installed game runtimes disabled by default. These are LiteOS interface controls; someone who administers the browser or device can inspect or change local storage. They do not manage Windows Group Policy, antivirus, a firewall, or the rest of the device.
+- **Settings → System → Danger** contains one button, **Clear Browser Data**. A same-family parent must enter their password. A one-use approval expires after 60 seconds. This removes **all LiteOS profiles, files, game libraries, and game saves on that browser**, plus its LiteOS preferences and cookies. It cannot clear other sites or the browser's entire history.
+
+## Heroes III inside LiteOS
+
+Open **Heroes III** from the desktop or Lite Apps. Choose your installed **Heroes III Complete / Shadow of Death** folder, or a standard ZIP of it. The engine needs `Data/H3bitmap.lod`, `Data/H3sprite.lod`, `Data/Heroes3.snd`, and the rest of the matching game installation. Maps and campaigns are imported; music is optional. A Windows installer, an EXE by itself, and the Steam **HD Edition** are not compatible game data.
+
+**Play Heroes III** enters an isolated LiteOS game workspace when needed. Save open documents first. The real VCMI 1.7.5 WebAssembly engine supports local scenarios, campaigns, random maps, and hotseat. Online multiplayer is disabled. Game files use origin-private browser storage (OPFS), separated by LiteOS profile; they never upload to a server. Reimporting an installation stages and verifies the new files before switching, and keeps existing saves. Only one window can use a profile's installation at a time. Imports support 10,000 compatible files / 4 GB total / 2 GB per file, subject to available device quota. ZIP imports reject traversal, encryption, unsupported compression, and checksum failures.
+
+On a phone, export **game ZIP** from your computer, transfer it to the phone's Files app, and choose that ZIP in LiteOS. The game toolbar offers Right click, Esc, and Fullscreen. The layout adapts to phones, but actual game performance and browser memory limits depend on the device. Use a current browser with OPFS, Web Locks, OffscreenCanvas, WebAssembly threads, and cross-origin isolation. iOS browser features and available memory can differ from desktop browsers. Google browsing remains available in normal desktop mode; save and close games before leaving the isolated workspace.
+
+Save normally inside the game. **Download save backup** creates a `.h3save` file (up to 2,000 files / 64 MB); **Restore saves** merges it and renames collisions. Game saves and installations are separate from `.litebackup` workspace backups. Clearing LiteOS data or browser site storage removes them. Download backups before clearing.
+
+Validation for this release: folder/ZIP planning, malformed archives, export round trips, memory/path limits, profile permissions, and the real WASM binaries are tested. A real browser imported/exported synthetic test files and reached VCMI's native initialization; those synthetic files cannot establish successful gameplay. A full playthrough, graphics/audio, in-game saving, and performance with commercial game data are not verified in this environment.
+
+## Original Oblivion experiment
+
+**Lite Apps → Oblivion experiment** loads a pinned BoxedWine ST-JIT engine in the browser using a locally selected Wine system ZIP. The experiment links to the official 97 MB system ZIP; download it once, choose it in the experiment, then load the engine. LiteOS verifies its complete SHA-256 before use and does not mirror or upload the Wine system ZIP. It does not use a Windows streaming host. Select the original 32-bit `Oblivion.exe` (1.2.0416), its bundled DLLs, and any matching data files. `Oblivion(1).esm` is recognized as the master file. Oblivion Remastered is outside this experiment. The game files stay in temporary memory and are released on reload/close; this experiment does not provide persistent Oblivion saves.
+
+The interface reports selected dependencies, bounds memory imports, and offers a downloadable diagnostic log. A desktop selection is capped at 6 GB; touch devices at 1 GB. Over 512 MB requires acknowledgement. This engine copies selected files into RAM and does not lazily stream a full game installation. A full install can exceed practical browser memory. The graphics path requires WebGL 2. **Loader-only mode** uses the engine's documented `-novideo` / `-nosound` options and Wine's GDI preset to inspect dependencies without graphics/audio; it is automatically selected when WebGL 2 is unavailable.
+
+Observed result with the supplied original EXE: the real Wine runtime started, reached its module loader, and reported `binkw32.dll` missing, with `loader_init ... status c0000135`. The separately supplied master file does not replace that DLL or the missing BSA archives. This is a dependency-probe result, **not verified playable Oblivion**. Working menus, graphics, audio, controls, saves, and gameplay remain unverified. The included experiment is the concrete next test path when the complete owned installation is available.
 
 ## Sharing and moving between devices
 
@@ -35,7 +55,7 @@ Choose **Workers & Pages → Create application → Import a repository**, selec
 | Deploy command | `npm run deploy` |
 | Node.js | 22 or newer |
 
-The deploy command publishes the Worker directly. It does not provision storage, apply database migrations, or access R2. No database IDs or bucket names are required. This removes the prior `liteos-files` missing-bucket (10085) dependency. If you manually added DB/BUCKET bindings in the Cloudflare dashboard, remove those bindings from this Worker; you can retain the underlying resources. Worker hosting quotas still belong to your Cloudflare account. See [Workers Free limits](https://developers.cloudflare.com/workers/platform/limits/).
+The build downloads public, open-source engine/system runtimes and verifies their pinned sizes and SHA-256 hashes. The Worker stays small; engine binaries and corresponding source archives are deployed as Cloudflare static assets (about 80 MB of public build downloads, each file below 25 MB). Wine system ZIPs are supplied locally by the user and are not part of the build. No commercial game files are part of the repository or build. Keep the build command configured so these assets exist before deployment. The deploy command publishes the Worker directly. It does not provision storage, apply database migrations, or access R2. No database IDs or bucket names are required. This removes the prior `liteos-files` missing-bucket (10085) dependency. If you manually added DB/BUCKET bindings in the Cloudflare dashboard, remove those bindings from this Worker; you can retain the underlying resources. Worker hosting quotas still belong to your Cloudflare account. See [Workers Free limits](https://developers.cloudflare.com/workers/platform/limits/).
 
 ## Optional connected AI
 
@@ -67,4 +87,6 @@ npm run build
 npm run validate
 ```
 
-GitHub Actions runs these checks on pushes. The build packages the frontend and server together; the frontend itself can also run from static hosting with local profiles and built-in help. The optional AI route requires the Worker. The app is a browser desktop prototype, not a bootable kernel or a native Windows virtual machine.
+GitHub Actions runs these checks on pushes. `runtime-manifest.json`, `oblivion-runtime-manifest.json`, and `source-archives.json` pin the runtime downloads. `.runtime-cache` and generated `dist` assets are ignored by Git. Engine credits, licenses, and corresponding-source links are available under `public/open-source` and on each game launcher.
+
+The build packages the frontend and server together; the frontend itself can also run from static hosting with local profiles and built-in help. The optional AI route requires the Worker. The app is a browser desktop prototype, not a bootable kernel or a native Windows virtual machine.

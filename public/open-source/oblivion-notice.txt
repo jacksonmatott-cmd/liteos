@@ -1,0 +1,42 @@
+LiteOS original Oblivion dependency experiment — 2026-11-21
+
+BoxedWine ST-JIT candidate: bf83173605148c73780069e9afa452cc05cb7191.
+Copyright the BoxedWine contributors. GPL-2.0-or-later.
+The LiteOS experiment interface and local-file adapter are GPL-2.0-or-later.
+Full GPL text: /oblivion/LICENSE-BoxedWine.txt
+
+Corresponding engine source archive, served alongside the engine:
+/runtimes/sources/boxedwine-source.tar.gz
+SHA-256 f24eab342a05433785018af60238a4914373195d0a26f3f799dc6f288260775a
+This retains engine code, third-party notices, patches, and build instructions.
+Upstream source:
+https://github.com/danoon2/Boxedwine/tree/bf83173605148c73780069e9afa452cc05cb7191
+Build instructions:
+https://github.com/danoon2/Boxedwine/blob/bf83173605148c73780069e9afa452cc05cb7191/project/emscripten/buildInstructions.md
+
+The upstream JavaScript and WASM engine bytes are unchanged and SHA-256 checked
+against oblivion-runtime-manifest.json. LiteOS wraps the documented shell
+parameters, file-loading callback, print/error handlers, and temporary D: drive.
+Loader-only mode uses -novideo/-nosound and GDI. It does not test graphics/audio.
+The complete wrapper and build source is in:
+https://github.com/jacksonmatott-cmd/liteos
+
+Dependency notices retained in the source archive include SDL (zlib license),
+zlib/minizip, and other vendored libraries. Emscripten-generated glue uses the
+MIT / University of Illinois-NCSA licenses; fsfs retains its MIT header.
+https://github.com/emscripten-core/emscripten/blob/main/LICENSE
+
+Wine system files are NOT distributed, mirrored, proxied, or uploaded by LiteOS.
+The user can download an official upstream system ZIP and select it locally;
+LiteOS checks its full SHA-256 before loading it into temporary browser memory.
+Wine is LGPL-2.1-or-later. The matching Wine source reference in upstream's root
+build manifest is db11d0fe6a169c457e23d007e20404643d067aa8:
+https://github.com/wine-mirror/wine/tree/db11d0fe6a169c457e23d007e20404643d067aa8
+https://github.com/wine-mirror/wine/blob/db11d0fe6a169c457e23d007e20404643d067aa8/COPYING.LIB
+Custom root build/patch records are in BoxedWine's tools/buildWine source tree.
+See the upstream distributor for the assembled system ZIP's component records.
+
+No Oblivion executable, master, BSA archive, DLL, or other commercial game data
+is included in the repository, static deployment, or engine source archives.
+Oblivion is a trademark of its respective rights holders; this experiment is
+unaffiliated. Gameplay support has not been verified.
