@@ -36,7 +36,7 @@ Use **Workers & Pages → Create application → Import a repository** and choos
 | Deploy command | `npm run deploy` |
 | Runtime | Node.js 22 or newer for builds |
 
-Wrangler automatically provisions the `DB` D1 database and `BUCKET` R2 bucket declared in `wrangler.jsonc`. The deploy script deploys the Worker and applies the committed SQL migrations. **Your Cloudflare account must have R2 enabled** for file imports. R2 activation may require a billing profile even while usage is inside its free allowance; this project does not claim that activation is available without one. Worker, D1, R2 and AI provider quotas remain account-specific.
+The deploy script explicitly checks for the `BUCKET` R2 bucket and creates it if missing. It reuses the existing `DB` D1 database by its configured ID or name, creates it only when missing, and writes the actual database ID into the build’s configuration. Database migrations run **before** publishing the Worker. Existing files and databases are preserved. This does not rely on automatic binding provisioning. **Your Cloudflare account must have R2 enabled** for file imports. R2 activation may require a billing profile even while usage is inside its free allowance; this project does not claim that activation is available without one. Worker, D1, R2 and AI provider quotas remain account-specific.
 
 Official references: [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/), [automatic provisioning](https://developers.cloudflare.com/changelog/post/2025-10-24-automatic-resource-provisioning/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [R2](https://developers.cloudflare.com/r2/).
 
@@ -49,6 +49,12 @@ npx wrangler secret put OLLAMA_API_KEY
 ```
 
 Paste the existing key at the hidden prompt. The cloud provider key is shared by authenticated LiteOS users on that deployment; each user is limited to 20 AI requests per hour. Sharing a deployment with many people can consume the provider’s quota.
+
+## If a Cloudflare build reports a missing R2 bucket (10085)
+
+Use the latest `main` commit and ensure the Worker’s **Settings → Build → Deploy command** is `npm run deploy`. Calling `npx wrangler deploy` directly skips LiteOS storage setup. The next build verifies or creates `liteos-files`, resolves `liteos-db`, applies migrations, and then publishes.
+
+If storage setup reports that R2 is disabled, enable R2 in your own Cloudflare account. If it reports access denied, the build’s Cloudflare API token needs **Workers R2 Storage: Edit** and **D1: Edit**, as well as its existing Worker deployment permissions. The script stops before publishing when storage or migrations fail, and reports the underlying Cloudflare error. It never deletes a bucket or database. [Workers Builds settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
 
 ## Run locally
 
