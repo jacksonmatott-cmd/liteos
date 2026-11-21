@@ -52,7 +52,7 @@ test('INI changes preserve unrelated settings and remove obsolete or duplicate t
 });
 test('Wine diagnostics distinguish missing bundled files, Steam client failures and graphics failures',()=>{
  assert.equal(classifyWineLine('0108:err:module:import_dll Library binkw32.dll (which is needed by Oblivion.exe) not found').kind,'dependency');
- assert.equal(classifyWineLine('Fatal error: SteamAPI_Init() failed.').kind,'steam-client');assert.equal(classifyWineLine('wined3d: failed to initialize renderer').kind,'graphics');assert.equal(classifyWineLine('Launching Oblivion.exe'),null);
+ assert.equal(classifyWineLine('Fatal error: SteamAPI_Init() failed.').kind,'steam-client');assert.equal(classifyWineLine('wined3d: failed to initialize renderer').kind,'graphics');assert.equal(classifyWineLine('Launching Oblivion.exe'),null);const steam=classifyWineLine('Application load error 5:0000065434');assert.equal(steam.kind,'steam-client');assert.equal(steam.code,'5:0000065434');assert.match(steam.message,/signed-in Steam client/);
  assert.equal(classifyWineLine('0110:err:winediag:wined3d_dll_init Using the OpenGL renderer.'),null);assert.equal(classifyWineLine('[MIPS] count=70 raw=30 avg=39'),null);
 });
 test('a selected EXE and Wine ZIP permit one-click Start before manual engine preparation',()=>{
@@ -69,5 +69,5 @@ test('launch controls expose startup failures and distinguish a start request fr
  assert.match(launchAvailability(state).hint,/Starting Wine/);
  assert.match(launchAvailability({...state,coreStarted:true}).hint,/Wine is running/);
  assert.equal(launchAvailability({...state,issue:'Direct3D failed'}).hint,'Direct3D failed');
- assert.equal(launchAvailability({...state,failed:true}).enabled,false);assert.match(launchAvailability({...state,failed:true}).hint,/Reload/);
+ assert.match(launchAvailability({...state,failed:true,issue:'Display unavailable'}).hint,/Display unavailable/);assert.equal(launchAvailability({...state,failed:true}).enabled,false);assert.match(launchAvailability({...state,failed:true}).hint,/Reload/);
 });

@@ -17,6 +17,9 @@ https://github.com/danoon2/Boxedwine/blob/bf83173605148c73780069e9afa452cc05cb71
 The upstream JavaScript and WASM engine bytes are unchanged and SHA-256 checked
 against oblivion-runtime-manifest.json. LiteOS wraps the documented shell
 parameters, file-loading callback, print/error handlers, and temporary D: drive.
+The local presentation.js adapter replaces both overlay presentation callbacks
+with one lazy opaque 2D context, preserving crops, bitmap cleanup and frame
+acknowledgements in finally. The direct GL surface and engine bytes stay intact.
 Loader-only mode uses -novideo/-nosound and GDI. It does not test graphics/audio.
 The complete wrapper and build source is in:
 https://github.com/jacksonmatott-cmd/liteos

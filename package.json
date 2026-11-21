@@ -1,6 +1,6 @@
 {
   "name": "liteos",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "type": "module",
   "description": "LiteOS browser desktop with free device storage, embedded Google and local family profiles",

@@ -60,3 +60,5 @@ const steamPage=await workerModule.default.fetch(new Request('https://liteos.tes
 assert.equal((steamHTML.match(/id="run-probe"/g)||[]).length,1);assert.match(steamHTML,/id="fullscreen"/);assert.match(steamHTML,/Oblivion launch controls/);
 
 assert.match(steamHTML,/id="test-display"/);assert.match(steamHTML,/id="display-test"/);const displayModule=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/display.js'),{},{});assert.equal(displayModule.status,200);assert.match(await displayModule.text(),/createDisplayDiagnostics/);console.log('Separate display test and graphics diagnostics are packaged.');
+
+const presenter=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/presentation.js'),{},{});assert.equal(presenter.status,200);assert.match(presenter.headers.get('content-type'),/javascript/);assert.match(await presenter.text(),/installPresentationBridge/);assert.match(steamHTML,/5:0000065434/);assert.match(steamHTML,/id="display-error"/);console.log('Shared display presenter and Steam startup explanation are packaged.');

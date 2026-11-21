@@ -24,3 +24,10 @@ body.game-fullscreen #probe-runtime>h2,body.game-fullscreen #console{display:non
 [data-display-layer=direct]>#boxedwine-webgl-canvas-0{visibility:hidden!important}[data-display-layer=software]>#boxedwine-webgl-canvas-0{visibility:visible!important}
 #display-status{font-size:14px;line-height:1.5;margin:7px 0 12px;color:#3b577c}.display-details{flex-shrink:0;font-size:14px;line-height:1.5;margin-bottom:10px;padding:10px 12px;background:#edf3fc;border:1px solid #d7e1ee;border-radius:8px}.display-details summary{cursor:pointer;min-height:27px}.display-details label{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:10px 0}.display-details select{max-width:100%;font:inherit;padding:8px;border:1px solid #c5d2e3;border-radius:6px}.display-details p{font-size:13px}.display-details output{display:block;font-size:12px;overflow-wrap:anywhere;color:#5a708c}
 body.game-fullscreen #display-status{flex:0 0 auto;padding:4px 8px;margin:0;font-size:12px}body.game-fullscreen .display-details{margin:0 0 4px;padding:4px 8px}body.game-fullscreen #dropzone{display:flex;container-type:size;flex:1;min-height:0}body.game-fullscreen #dropzone>.emscripten_border{width:min(100cqw,calc(100cqh * var(--boxedwine-canvas-aspect,1.333333)))}
+
+/* Diagnostics stay above the picture without consuming its fullscreen height. */
+.display-error{padding:10px 12px;border:1px solid #dba2aa;border-radius:8px;background:#fff0f1;color:#91253a;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+body.game-fullscreen .launch-bar{max-height:40dvh;overflow:auto}body.game-fullscreen .launch-copy span{max-height:4em;overflow:auto}
+body.game-fullscreen #probe-runtime{position:relative;overflow:auto}body.game-fullscreen #display-status,body.game-fullscreen #display-error{max-height:4em;overflow:auto;flex-shrink:0}
+body.game-fullscreen .display-details[open]{position:absolute;top:32px;left:8px;right:8px;max-height:min(65dvh,320px);overflow:auto;overscroll-behavior:contain;z-index:30;box-shadow:0 8px 28px #17294038}
+body.game-fullscreen #app{flex:1 0 160px;min-height:160px}body.game-fullscreen #dropzone{min-height:100px;padding:0}

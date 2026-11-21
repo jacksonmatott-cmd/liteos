@@ -28,5 +28,11 @@ test('display diagnostics distinguish CPU activity and backend selection from re
  assert.match(displaySummary(info,{headless:true}),/Graphics are disabled/);
  monitor.showTest(true);assert.match(displaySummary(monitor.snapshot()),/not Oblivion/);
  let prevented=false,stopped=false;canvas.listeners.webglcontextlost({preventDefault(){prevented=true;},stopImmediatePropagation(){stopped=true;}});monitor.showTest(false);
- assert.ok(prevented&&stopped);assert.match(displaySummary(monitor.snapshot()),/lost the graphics context/);
+ assert.ok(prevented);assert.equal(stopped,false);assert.match(displaySummary(monitor.snapshot()),/lost the graphics context/);
+});
+test('callback observation retries missing handlers and remains idempotent for replacements',()=>{
+ const {monitor}=fixture(),module={};monitor.attachModule(module);module.boxedwinePresentFrame=()=>23;monitor.attachModule(module);monitor.attachModule(module);assert.equal(module.boxedwinePresentFrame(),23);assert.equal(monitor.snapshot().bitmapCallbacks,1);module.boxedwinePresentFrame=()=>42;monitor.attachModule(module);assert.equal(module.boxedwinePresentFrame(),42);assert.equal(monitor.snapshot().bitmapCallbacks,2);
+});
+test('a failed display pattern does not leave an empty test canvas selected',()=>{
+ const {monitor,testCanvas}=fixture();testCanvas.getContext=()=>null;assert.throws(()=>monitor.showTest(true),/cannot create/);assert.equal(testCanvas.hidden,true);assert.equal(monitor.snapshot().testPattern,false);
 });
