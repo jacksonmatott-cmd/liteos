@@ -1,0 +1,37 @@
+const paths={
+home:'<path d="m3 10 9-7 9 7v10H3z"/><path d="M9 20v-7h6v7"/>',
+files:'<path d="M3 6h7l2 3h9v11H3z"/><path d="M3 10V5h7l2 3h8"/>',
+folder:'<path d="M2 6h8l2 3h10l-2 11H2z"/><path d="M2 9h20"/>',
+notes:'<path d="M5 3h14v18H5z"/><path d="M9 8h6M9 12h6M9 16h4"/>',
+document:'<path d="M6 3h8l5 5v13H6z"/><path d="M14 3v6h5M9 13h7M9 17h5"/>',
+assistant:'<path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5z"/><path d="m20 2 .7 2.3L23 5l-2.3.7L20 8l-.7-2.3L17 5l2.3-.7z"/>',
+settings:'<path d="m10 3-1 3-3 1-2-1-2 4 2 2v3l-2 2 2 4 3-1 2 1 1 3h5l1-3 3-1 2 1 2-4-2-2v-3l2-2-2-4-3 1-2-1-1-3z" transform="translate(1 -1) scale(.88)"/><circle cx="12" cy="12" r="3.2"/>',
+terminal:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="m6 9 4 3-4 3M13 15h5"/>',
+browser:'<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c5 5 5 13 0 18-5-5-5-13 0-18"/>',
+store:'<path d="M4 8h16l1 13H3z"/><path d="M8 8V6a4 4 0 0 1 8 0v2"/><path d="M9 13h6M12 10v6"/>',
+security:'<path d="m12 2 9 4v6c0 5-5 9-9 11-4-2-9-6-9-11V6z"/><path d="m8 12 3 3 5-6"/>',
+games:'<path d="M7 7h10c3 0 5 6 5 10s-4 3-6-1H8c-2 4-6 5-6 1S4 7 7 7z"/><path d="M7 10v6M4 13h6M16 11h.1M19 14h.1"/>',
+paint:'<path d="M12 3C6 3 2 7 2 12s4 9 9 9c3 0 3-2 2-4s1-3 4-2c4 1 5-3 5-5S18 3 12 3z"/><circle cx="7" cy="11" r="1"/><circle cx="11" cy="7" r="1"/><circle cx="16" cy="8" r="1"/>',
+photos:'<rect x="2" y="3" width="20" height="18" rx="2"/><circle cx="8" cy="9" r="2"/><path d="m3 19 6-6 4 4 4-7 5 8"/>',
+calc:'<rect x="5" y="2" width="14" height="20" rx="2"/><path d="M8 6h8M8 11h2M14 11h2M8 15h2M14 15h2M8 19h2M14 19h2"/>',
+remote:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 22h8M12 17v5M7 8h10M14 5l3 3-3 3"/>',
+bin:'<path d="M3 6h18M9 6V3h6v3M6 6l1 15h10l1-15M10 10v7M14 10v7"/>',
+search:'<circle cx="10.5" cy="10.5" r="7"/><path d="m16 16 5 5"/>',
+close:'<path d="m6 6 12 12M6 18 18 6"/>',minus:'<path d="M5 12h14"/>',maximize:'<rect x="5" y="5" width="14" height="14"/>',
+chevron:'<path d="m9 5 7 7-7 7"/>',back:'<path d="m14 5-7 7 7 7"/>',up:'<path d="m5 14 7-7 7 7"/>',
+plus:'<path d="M12 4v16M4 12h16"/>',download:'<path d="M12 3v12m-5-5 5 5 5-5M4 16v5h16v-5"/>',upload:'<path d="M12 16V4m-5 5 5-5 5 5M4 16v5h16v-5"/>',
+share:'<circle cx="18" cy="4" r="3"/><circle cx="5" cy="12" r="3"/><circle cx="18" cy="20" r="3"/><path d="m8 10 7-4M8 14l7 4"/>',
+refresh:'<path d="M20 7a9 9 0 1 0 1 8M20 2v6h-6"/>',lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4M12 14v3"/>',
+user:'<circle cx="12" cy="7" r="4"/><path d="M4 22v-3a8 8 0 0 1 16 0v3"/>',users:'<circle cx="9" cy="7" r="3.5"/><path d="M2 21v-3a7 7 0 0 1 14 0v3M17 4a3.5 3.5 0 0 1 0 7M18 14c4 1 4 4 4 7"/>',
+check:'<path d="m5 12 4 4L20 5"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>',alert:'<path d="m12 3 10 18H2z"/><path d="M12 9v5M12 17h.01"/>',
+wifi:'<path d="M2 8c6-5 14-5 20 0M5 12c4-4 10-4 14 0M8 16c2-2 6-2 8 0M12 20h.01"/>',volume:'<path d="m3 9 5 0 5-5v16l-5-5H3zM17 8c3 2 3 6 0 8M20 5c5 4 5 10 0 14"/>',bell:'<path d="M5 16V9a7 7 0 0 1 14 0v7l2 3H3zM9 22h6"/>',
+moon:'<path d="M20 16A9 9 0 0 1 8 4a9 9 0 1 0 12 12z"/>',sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M5 5l1.5 1.5M17.5 17.5 19 19M5 19l1.5-1.5M17.5 6.5 19 5"/>',
+power:'<path d="M12 2v10M6 5a9 9 0 1 0 12 0"/>',send:'<path d="m3 3 19 9-19 9 4-9zM7 12h15"/>',eye:'<path d="M2 12c5-9 15-9 20 0-5 9-15 9-20 0z"/><circle cx="12" cy="12" r="3"/>',save:'<path d="M3 3h15l3 3v15H3zM7 3v6h10V3M7 21v-8h10v8"/>',
+code:'<path d="m8 6-6 6 6 6M16 6l6 6-6 6M14 3l-4 18"/>',edit:'<path d="m4 16 13-13 4 4L8 20l-5 1zM14 6l4 4"/>',external:'<path d="M14 3h7v7M21 3l-11 11M11 3H3v18h18v-8"/>',
+disk:'<path d="M4 3h16l2 12v6H2v-6zM2 15h20M17 18h1M13 18h1"/>',display:'<rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 22h8M12 17v5"/>',network:'<rect x="8" y="2" width="8" height="6"/><path d="M12 8v7M4 15h16"/><rect x="1" y="15" width="6" height="6"/><rect x="9" y="15" width="6" height="6"/><rect x="17" y="15" width="6" height="6"/>',
+accessibility:'<circle cx="12" cy="3" r="2"/><path d="M3 7h18M12 7v8M8 22l4-7 4 7"/>',privacy:'<path d="m12 3 8 3v7c0 4-4 7-8 9-4-2-8-5-8-9V6z"/><rect x="9" y="10" width="6" height="6" rx="1"/>',
+copy:'<rect x="7" y="7" width="14" height="14" rx="1"/><path d="M17 7V3H3v14h4"/>',clock:'<circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 3"/>',more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',battery:'<rect x="2" y="7" width="18" height="10" rx="2"/><path d="M22 10v4M5 10h10v4H5z"/>',logout:'<path d="M9 3H3v18h6M10 12h12m-5-5 5 5-5 5"/>'
+};
+export function icon(name,cls=''){return `<svg class="icon ${cls}" viewBox="0 0 24 24" aria-hidden="true">${paths[name]||paths.document}</svg>`;}
+export function tile(name){return `<span class="app-tile ${name}">${icon(name)}</span>`;}
+export function mark(){return '<span class="lite-mark" aria-hidden="true"><i></i><i></i><i></i></span>';}
