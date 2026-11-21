@@ -40,3 +40,9 @@ No Oblivion executable, master, BSA archive, DLL, or other commercial game data
 is included in the repository, static deployment, or engine source archives.
 Oblivion is a trademark of its respective rights holders; this experiment is
 unaffiliated. Gameplay support has not been verified.
+
+Classic Steam profile references (factual file/registry/checksum mappings):
+https://github.com/llde/xOBSE/blob/99930e168e73843f412dcd3fdfae8a04f4d3bbad/obse/loader_common/EXEChecksum.cpp
+https://github.com/wrye-bash/wrye-bash/blob/09ab76083e1583ebbf5e28be516d3e98c9327da3/Mopy/bash/game/oblivion/__init__.py
+https://github.com/niftools/max_nif_plugin/blob/develop/MaxNifTools.ini
+https://partner.steamgames.com/doc/api/steam_api
