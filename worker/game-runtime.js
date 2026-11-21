@@ -11,12 +11,13 @@ export async function extractTarEntry(stream,wanted){
  try{for(;;){const header=await take(512);const name=new TextDecoder().decode(header.subarray(0,100)).replace(/\0.*$/s,'');if(!name)break;const size=parseInt(new TextDecoder().decode(header.subarray(124,136)).replace(/\0.*$/s,'').trim(),8);if(!Number.isSafeInteger(size)||size<0||size>128*1048576)throw new HttpError(502,'Invalid runtime archive.');if(name===wanted){const bytes=new Uint8Array(size);for(let offset=0;offset<size;){const part=await take(Math.min(65536,size-offset));bytes.set(part,offset);offset+=part.length;}return bytes;}let remaining=Math.ceil(size/512)*512;while(remaining){const n=Math.min(remaining,65536);await take(n);remaining-=n;}}throw new HttpError(502,'The requested game engine file was absent.');}finally{await reader.cancel().catch(()=>{});}
 }
 export async function gameRuntime(request,env,ctx){
+ if(!['GET','HEAD'].includes(request.method))throw new HttpError(405,'Method not allowed.');
  const url=new URL(request.url),name=url.pathname.split('/').at(-1),spec=GAME_RUNTIME.files[name];if(!spec)throw new HttpError(404,'Unknown game engine file.');
  let prefix='';if(name==='vcmiclient.js'&&url.searchParams.has('profile'))prefix=enginePrefix(url.searchParams.get('profile'),url.searchParams.get('version'));
  let response;
- if(env.GAME_ASSETS){response=await env.GAME_ASSETS.fetch(new Request(url.origin+url.pathname));if(!response.ok)throw new HttpError(503,'The game engine assets were not deployed.');}
+ if(env.GAME_ASSETS){response=await env.GAME_ASSETS.fetch(new Request(url.origin+'/runtimes/heroes3/'+name));if(!response.ok)throw new HttpError(503,'The game engine assets were not deployed.');}
  else{
-  const key=new Request(url.origin+url.pathname+'?runtime=vcmi-1.7.5-v0.1.0');
+  const key=new Request(url.origin+'/runtimes/heroes3/'+name+'?runtime=vcmi-1.7.5-v0.1.0');
   response=await globalThis.caches?.default?.match(key);
   if(!response){const upstream=await fetch(GAME_RUNTIME.archive,{signal:AbortSignal.timeout(90000)});if(!upstream.ok)throw new HttpError(503,'The browser engine could not be downloaded. Please retry.');const bytes=await extractTarEntry(upstream.body.pipeThrough(new DecompressionStream('gzip')),'homm3-browser/dist/'+name);if(bytes.length!==spec.size||await digest(bytes)!==spec.sha256)throw new HttpError(502,'Game runtime integrity verification failed.');response=new Response(bytes,{headers:{'Content-Type':spec.type,'Cache-Control':'public,max-age=31536000,immutable'}});if(ctx?.waitUntil&&globalThis.caches?.default)ctx.waitUntil(caches.default.put(key,response.clone()));}
  }

@@ -47,3 +47,9 @@ assert.match(await experiment.text(),/Choose Wine system ZIP/);
 const sourceHead=await workerModule.default.fetch(new Request('https://liteos.test/runtimes/sources/boxedwine-source.tar.gz',{method:'HEAD'}),{},{});assert.equal(sourceHead.status,200);assert.equal(sourceHead.headers.get('content-length'),'23678177');
 const absentRoot=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/oblivion/wine-root.zip'),{},{});assert.equal(absentRoot.status,404);
 console.log('Experimental engine isolation, source access, and local-only Wine root are valid.');
+
+const gameAssetRequests=[];const runtimeEnv={GAME_ASSETS:{fetch:async request=>{gameAssetRequests.push(request.url);return new Response('/* pinned upstream script */');}}};
+const profileRuntime=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/heroes3/vcmiclient.js?profile=guest&version=11111111-1111-1111-1111-111111111111'),runtimeEnv,{});
+assert.equal(profileRuntime.status,200);assert.equal(profileRuntime.headers.get('cache-control'),'private,no-cache');assert.match(await profileRuntime.text(),/'liteos-games','heroes3',"guest"/);assert.deepEqual(gameAssetRequests,['https://liteos.test/runtimes/heroes3/vcmiclient.js']);assert.match(profileRuntime.headers.get('content-security-policy'),/wasm-unsafe-eval/);assert.equal(profileRuntime.headers.get('cross-origin-embedder-policy'),'require-corp');
+const invalidProfile=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/heroes3/vcmiclient.js?profile=../bad&version=no'),runtimeEnv,{});assert.equal(invalidProfile.status,400);assert.equal(gameAssetRequests.length,1);
+console.log('Profile-scoped worker script uses a dynamic route before static asset delivery.');

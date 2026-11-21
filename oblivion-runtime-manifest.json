@@ -12,8 +12,8 @@
     {
       "path": "runtime/boxedwine.css",
       "url": "https://raw.githubusercontent.com/danoon2/Boxedwine/bf83173605148c73780069e9afa452cc05cb7191/project/emscripten/boxedwine.css",
-      "bytes": 5277,
-      "sha256": "29d569dbe07dcafb23e2e08ddeae3a36386442a023de63bf9b86ac98f66072b2"
+      "bytes": 5276,
+      "sha256": "6712a644ebf887ce353059bb5e4666ad538adfb711ed841ab357eddb87d9553b"
     },
     {
       "path": "runtime/boxedwine.html",
@@ -36,8 +36,8 @@
     {
       "path": "runtime/fsfs.js",
       "url": "https://raw.githubusercontent.com/danoon2/Boxedwine/bf83173605148c73780069e9afa452cc05cb7191/project/emscripten/fsfs.js",
-      "bytes": 29741,
-      "sha256": "fb14cee0e5f7b446cd7cdd9a5f5cc64dace40012e7bdae63719bc89508157caa"
+      "bytes": 29740,
+      "sha256": "9e3f5c51455614bae2e7cf71a738bef74d7213be6bc57c39e9855878ef521ad0"
     }
   ],
   "filesystem": {
