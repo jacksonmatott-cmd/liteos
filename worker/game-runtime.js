@@ -3,6 +3,8 @@ import {HttpError,digest} from './core.js';
 const GAME_RUNTIME = {};
 const OBLIVION_RUNTIME = {};
 const SOURCE_ARCHIVES = {};
+const HEROES_LOADER = "";
+function runtimeCache(){try{return globalThis.caches?.default;}catch{return null;}}
 export function runtimeScope(profile,version){if(!/^(guest|[a-f0-9-]{36})$/.test(profile||'')||!/^[a-f0-9-]{36}$/.test(version||''))throw new HttpError(400,'Invalid game profile.');return {profile,version};}
 export function enginePrefix(profile,version){runtimeScope(profile,version);return `// LiteOS: scope the upstream engine's OPFS access to this local profile/version.\n(()=>{const original=navigator.storage.getDirectory.bind(navigator.storage);navigator.storage.getDirectory=async()=>{let d=await original();for(const name of ['liteos-games','heroes3',${JSON.stringify(profile)},${JSON.stringify(version)}])d=await d.getDirectoryHandle(name,{create:true});return d;};})();\n`;}
 export async function extractTarEntry(stream,wanted){
@@ -15,11 +17,12 @@ export async function gameRuntime(request,env,ctx){
  const url=new URL(request.url),name=url.pathname.split('/').at(-1),spec=GAME_RUNTIME.files[name];if(!spec)throw new HttpError(404,'Unknown game engine file.');
  let prefix='';if(name==='vcmiclient.js'&&url.searchParams.has('profile'))prefix=enginePrefix(url.searchParams.get('profile'),url.searchParams.get('version'));
  let response;
- if(env.GAME_ASSETS){response=await env.GAME_ASSETS.fetch(new Request(url.origin+'/runtimes/heroes3/'+name));if(!response.ok)throw new HttpError(503,'The game engine assets were not deployed.');}
+ if(name==='vcmiclient.js'&&HEROES_LOADER)response=new Response(HEROES_LOADER);
+ else if(env.GAME_ASSETS){response=await env.GAME_ASSETS.fetch(new Request(url.origin+'/runtimes/heroes3/'+name));if(!response.ok)throw new HttpError(503,'The game engine assets were not deployed.');}
  else{
   const key=new Request(url.origin+'/runtimes/heroes3/'+name+'?runtime=vcmi-1.7.5-v0.1.0');
-  response=await globalThis.caches?.default?.match(key);
-  if(!response){const upstream=await fetch(GAME_RUNTIME.archive,{signal:AbortSignal.timeout(90000)});if(!upstream.ok)throw new HttpError(503,'The browser engine could not be downloaded. Please retry.');const bytes=await extractTarEntry(upstream.body.pipeThrough(new DecompressionStream('gzip')),'homm3-browser/dist/'+name);if(bytes.length!==spec.size||await digest(bytes)!==spec.sha256)throw new HttpError(502,'Game runtime integrity verification failed.');response=new Response(bytes,{headers:{'Content-Type':spec.type,'Cache-Control':'public,max-age=31536000,immutable'}});if(ctx?.waitUntil&&globalThis.caches?.default)ctx.waitUntil(caches.default.put(key,response.clone()));}
+  const cache=runtimeCache();response=await cache?.match(key).catch(()=>null);
+  if(!response){const upstream=await fetch(GAME_RUNTIME.archive,{signal:AbortSignal.timeout(90000)});if(!upstream.ok)throw new HttpError(503,'The browser engine could not be downloaded. Please retry.');const bytes=await extractTarEntry(upstream.body.pipeThrough(new DecompressionStream('gzip')),'homm3-browser/dist/'+name);if(bytes.length!==spec.size||await digest(bytes)!==spec.sha256)throw new HttpError(502,'Game runtime integrity verification failed.');response=new Response(bytes,{headers:{'Content-Type':spec.type,'Cache-Control':'public,max-age=31536000,immutable'}});if(ctx?.waitUntil&&cache)ctx.waitUntil(cache.put(key,response.clone()).catch(()=>{}));}
  }
  if(prefix){const code=await response.text();return new Response(prefix+code,{headers:{'Content-Type':spec.type,'Cache-Control':'private,no-cache'}});}
  return new Response(request.method==='HEAD'?null:response.body,{headers:{'Content-Type':spec.type,'Cache-Control':'public,max-age=31536000,immutable'}});
@@ -28,7 +31,7 @@ export async function oblivionRuntime(request,env,ctx){
  const url=new URL(request.url),path=url.pathname.replace(/^\/oblivion\//,''),file=OBLIVION_RUNTIME.files.find(f=>f.path===path);if(!file)throw new HttpError(404,'Unknown experimental runtime file.');
  const type=path.endsWith('.wasm')?'application/wasm':path.endsWith('.css')?'text/css; charset=utf-8':path.endsWith('.html')?'text/html; charset=utf-8':'application/javascript; charset=utf-8';let response;
  if(env.GAME_ASSETS){response=await env.GAME_ASSETS.fetch(new Request(url.origin+url.pathname));if(!response.ok)throw new HttpError(503,'The experimental runtime assets were not deployed.');}
- else{const key=new Request(url.origin+url.pathname+'?runtime=boxedwine-bf831736');response=await globalThis.caches?.default?.match(key);if(!response){const upstream=await fetch(file.url,{signal:AbortSignal.timeout(60000)});if(!upstream.ok)throw new HttpError(503,'The experimental runtime download failed.');const bytes=new Uint8Array(await upstream.arrayBuffer());if(bytes.length!==file.bytes||await digest(bytes)!==file.sha256)throw new HttpError(502,'Experimental runtime verification failed.');response=new Response(bytes,{headers:{'Content-Type':type,'Cache-Control':'public,max-age=31536000,immutable'}});if(ctx?.waitUntil&&globalThis.caches?.default)ctx.waitUntil(caches.default.put(key,response.clone()));}}
+ else{const key=new Request(url.origin+url.pathname+'?runtime=boxedwine-bf831736');const cache=runtimeCache();response=await cache?.match(key).catch(()=>null);if(!response){const upstream=await fetch(file.url,{signal:AbortSignal.timeout(60000)});if(!upstream.ok)throw new HttpError(503,'The experimental runtime download failed.');const bytes=new Uint8Array(await upstream.arrayBuffer());if(bytes.length!==file.bytes||await digest(bytes)!==file.sha256)throw new HttpError(502,'Experimental runtime verification failed.');response=new Response(bytes,{headers:{'Content-Type':type,'Cache-Control':'public,max-age=31536000,immutable'}});if(ctx?.waitUntil&&cache)ctx.waitUntil(cache.put(key,response.clone()).catch(()=>{}));}}
  return new Response(request.method==='HEAD'?null:response.body,{headers:{'Content-Type':type,'Cache-Control':'public,max-age=31536000,immutable'}});
 }
 export async function engineSource(request,env,ctx){
@@ -36,7 +39,7 @@ export async function engineSource(request,env,ctx){
  const headers={'Content-Type':'application/gzip','Content-Length':String(spec.bytes),'Content-Disposition':'attachment; filename="'+name+'"','Cache-Control':'public,max-age=31536000,immutable'};
  if(request.method==='HEAD')return new Response(null,{headers});
  if(env.GAME_ASSETS){const response=await env.GAME_ASSETS.fetch(new Request(url.origin+url.pathname));if(!response.ok)throw new HttpError(503,'The engine source archive was not deployed.');return new Response(response.body,{headers});}
- const key=new Request(url.origin+url.pathname+'?sha256='+spec.sha256);let response=await globalThis.caches?.default?.match(key);
- if(!response){const upstream=await fetch(spec.url,{signal:AbortSignal.timeout(120000)});if(!upstream.ok)throw new HttpError(503,'The engine source archive is temporarily unavailable.');const bytes=new Uint8Array(await upstream.arrayBuffer());if(bytes.length!==spec.bytes||await digest(bytes)!==spec.sha256)throw new HttpError(502,'Engine source verification failed.');response=new Response(bytes,{headers});if(ctx?.waitUntil&&globalThis.caches?.default)ctx.waitUntil(caches.default.put(key,response.clone()));}
+ const key=new Request(url.origin+url.pathname+'?sha256='+spec.sha256);const cache=runtimeCache();let response=await cache?.match(key).catch(()=>null);
+ if(!response){const upstream=await fetch(spec.url,{signal:AbortSignal.timeout(120000)});if(!upstream.ok)throw new HttpError(503,'The engine source archive is temporarily unavailable.');const bytes=new Uint8Array(await upstream.arrayBuffer());if(bytes.length!==spec.bytes||await digest(bytes)!==spec.sha256)throw new HttpError(502,'Engine source verification failed.');response=new Response(bytes,{headers});if(ctx?.waitUntil&&cache)ctx.waitUntil(cache.put(key,response.clone()).catch(()=>{}));}
  return new Response(response.body,{headers});
 }
