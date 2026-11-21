@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -37,16 +37,10 @@ assert.match(sandboxCSP, /connect-src 'none'/);
 assert.ok(!sandboxCSP.includes('allow-same-origin'));
 assert.match(sandboxCSP, /script-src 'unsafe-inline'/);
 assert.ok(!/script-src[^;]*'unsafe-inline'/.test(desktopCSP));
+assert.match(desktopCSP,/frame-src 'self' https: blob:/);
 console.log('App sandbox and desktop script policies are isolated');
 
 const gameResponse=await workerModule.default.fetch(new Request('https://liteos.test/game-mode'),{},{});const libraryResponse=await workerModule.default.fetch(new Request('https://liteos.test/heroes3/'),{},{});assert.equal(gameResponse.status,200);assert.equal(libraryResponse.status,200);assert.equal(gameResponse.headers.get('cross-origin-opener-policy'),'same-origin');assert.equal(gameResponse.headers.get('cross-origin-embedder-policy'),'require-corp');assert.equal(desktopResponse.headers.get('cross-origin-embedder-policy'),null);assert.match(libraryResponse.headers.get('content-security-policy'),/wasm-unsafe-eval/);console.log('Game workspace isolation is separate from normal web browsing.');
-
-const experiment=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/index.html'),{},{});
-assert.equal(experiment.status,200);assert.equal(experiment.headers.get('cross-origin-embedder-policy'),'require-corp');assert.match(experiment.headers.get('content-security-policy'),/wasm-unsafe-eval/);
-assert.match(await experiment.text(),/Choose Wine system ZIP/);
-const sourceHead=await workerModule.default.fetch(new Request('https://liteos.test/runtimes/sources/boxedwine-source.tar.gz',{method:'HEAD'}),{},{});assert.equal(sourceHead.status,200);assert.equal(sourceHead.headers.get('content-length'),'23678177');
-const absentRoot=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/oblivion/wine-root.zip'),{},{});assert.equal(absentRoot.status,404);
-console.log('Experimental engine isolation, source access, and local-only Wine root are valid.');
 
 const gameAssetRequests=[];const runtimeEnv={GAME_ASSETS:{fetch:async request=>{gameAssetRequests.push(request.url);return new Response('/* pinned upstream script */');}}};
 const profileRuntime=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/heroes3/vcmiclient.js?profile=guest&version=11111111-1111-1111-1111-111111111111'),runtimeEnv,{});
@@ -55,10 +49,18 @@ const invalidProfile=await workerModule.default.fetch(new Request('https://liteo
 const rawLoader=await readFile(resolve(projectRoot,'.runtime-cache/heroes3/vcmiclient.js'),'utf8');const plainLoader=await workerModule.default.fetch(new Request('https://liteos.test/api/runtime/heroes3/vcmiclient.js'),{},{});assert.equal(await plainLoader.text(),rawLoader);
 console.log('Profile-scoped worker script preserves the exact embedded loader without runtime cache or static-routing dependencies.');
 
-const steamPage=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/index.html'),{},{});const steamHTML=await steamPage.text();assert.match(steamHTML,/Steam app 22330/);assert.match(steamHTML,/Check installation/);assert.match(steamHTML,/Start game/);const steamModule=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/steam-profile.js'),{},{});assert.equal(steamModule.status,200);assert.match(steamModule.headers.get('content-type'),/javascript/);assert.match(await steamModule.text(),/STEAM_APP_ID=22330/);console.log('Classic Steam profile, preflight and launch controls are packaged.');
-
-assert.equal((steamHTML.match(/id="run-probe"/g)||[]).length,1);assert.match(steamHTML,/id="fullscreen"/);assert.match(steamHTML,/Oblivion launch controls/);
-
-assert.match(steamHTML,/id="test-display"/);assert.match(steamHTML,/id="display-test"/);const displayModule=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/display.js'),{},{});assert.equal(displayModule.status,200);assert.match(await displayModule.text(),/createDisplayDiagnostics/);console.log('Separate display test and graphics diagnostics are packaged.');
-
-const presenter=await workerModule.default.fetch(new Request('https://liteos.test/oblivion/presentation.js'),{},{});assert.equal(presenter.status,200);assert.match(presenter.headers.get('content-type'),/javascript/);assert.match(await presenter.text(),/installPresentationBridge/);assert.match(steamHTML,/5:0000065434/);assert.match(steamHTML,/id="display-error"/);console.log('Shared display presenter and Steam startup explanation are packaged.');
+for(const path of ['/oblivion/','/oblivion/index.html','/oblivion/runtime/boxedwine.wasm','/runtimes/sources/boxedwine-source.tar.gz']){
+ const response=await workerModule.default.fetch(new Request('https://liteos.test'+path),{},{});
+ assert.equal(response.status,404,`${path} must no longer be served`);
+}
+assert.ok(!source.includes('BoxedWine'));
+assert.deepEqual((await readdir(resolve(projectRoot,'dist/client/runtimes'))).sort(),['heroes3','sources']);
+assert.deepEqual((await readdir(resolve(projectRoot,'dist/client/runtimes/sources'))).sort(),Object.keys(JSON.parse(await readFile(resolve(projectRoot,'source-archives.json'),'utf8'))).sort());
+for(const path of ['/desktop-ui.js','/desktop-state.js','/desktop.css']){
+ const response=await workerModule.default.fetch(new Request('https://liteos.test'+path),{},{});
+ assert.equal(response.status,200);assert.ok((await response.text()).length>100);
+}
+assert.match(await desktopResponse.text(),/href="\/desktop.css"/);
+const status=await workerModule.default.fetch(new Request('https://liteos.test/api/status'),{},{});
+assert.equal((await status.json()).version,'0.4.0');
+console.log('Modern desktop assets are included; removed game routes and binaries are absent.');

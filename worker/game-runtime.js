@@ -1,7 +1,6 @@
 import {HttpError,digest} from './core.js';
 // Replaced at build time. The upstream code and engine bytes are pinned.
 const GAME_RUNTIME = {};
-const OBLIVION_RUNTIME = {};
 const SOURCE_ARCHIVES = {};
 const HEROES_LOADER = "";
 function runtimeCache(){try{return globalThis.caches?.default;}catch{return null;}}
@@ -26,13 +25,6 @@ export async function gameRuntime(request,env,ctx){
  }
  if(prefix){const code=await response.text();return new Response(prefix+code,{headers:{'Content-Type':spec.type,'Cache-Control':'private,no-cache'}});}
  return new Response(request.method==='HEAD'?null:response.body,{headers:{'Content-Type':spec.type,'Cache-Control':'public,max-age=31536000,immutable'}});
-}
-export async function oblivionRuntime(request,env,ctx){
- const url=new URL(request.url),path=url.pathname.replace(/^\/oblivion\//,''),file=OBLIVION_RUNTIME.files.find(f=>f.path===path);if(!file)throw new HttpError(404,'Unknown experimental runtime file.');
- const type=path.endsWith('.wasm')?'application/wasm':path.endsWith('.css')?'text/css; charset=utf-8':path.endsWith('.html')?'text/html; charset=utf-8':'application/javascript; charset=utf-8';let response;
- if(env.GAME_ASSETS){response=await env.GAME_ASSETS.fetch(new Request(url.origin+url.pathname));if(!response.ok)throw new HttpError(503,'The experimental runtime assets were not deployed.');}
- else{const key=new Request(url.origin+url.pathname+'?runtime=boxedwine-bf831736');const cache=runtimeCache();response=await cache?.match(key).catch(()=>null);if(!response){const upstream=await fetch(file.url,{signal:AbortSignal.timeout(60000)});if(!upstream.ok)throw new HttpError(503,'The experimental runtime download failed.');const bytes=new Uint8Array(await upstream.arrayBuffer());if(bytes.length!==file.bytes||await digest(bytes)!==file.sha256)throw new HttpError(502,'Experimental runtime verification failed.');response=new Response(bytes,{headers:{'Content-Type':type,'Cache-Control':'public,max-age=31536000,immutable'}});if(ctx?.waitUntil&&cache)ctx.waitUntil(cache.put(key,response.clone()).catch(()=>{}));}}
- return new Response(request.method==='HEAD'?null:response.body,{headers:{'Content-Type':type,'Cache-Control':'public,max-age=31536000,immutable'}});
 }
 export async function engineSource(request,env,ctx){
  const url=new URL(request.url),name=url.pathname.replace('/runtimes/sources/',''),spec=SOURCE_ARCHIVES[name];if(!spec)throw new HttpError(404,'Unknown engine source archive.');

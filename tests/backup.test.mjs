@@ -27,3 +27,9 @@ test('restore rejects traversal and ignores executable preference values',async(
 test('backup size limits fail before reading oversized file content',async()=>{
  await assert.rejects(()=>exportWorkspace([{size:51*1048576}],{},'Backup-password-123'),/50 MB/);
 });
+test('desktop preferences survive encrypted backup without restoring unsafe app names or family permissions',async()=>{
+ const blob=await exportWorkspace(files,{taskbarAlignment:'left',startPins:['notes','tasks','notes','apphost','javascript:alert(1)'],doNotDisturb:true,allowExternalApps:true},'Backup-password-123');
+ const restored=await importWorkspace(blob,'Backup-password-123');
+ assert.deepEqual(restored.preferences,{taskbarAlignment:'left',startPins:['notes','tasks'],doNotDisturb:true});
+ assert.deepEqual(safePreferences({taskbarAlignment:'absolute',startPins:'notes',doNotDisturb:'false'}),{});
+});

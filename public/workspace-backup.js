@@ -1,3 +1,4 @@
+import {normalizePinnedApps} from './desktop-state.js';
 import {devicePath} from './device-accounts.js';
 const text=new TextEncoder(),decode=new TextDecoder(),LIMIT=50*1048576;
 const b64=bytes=>{let result='';for(let at=0;at<bytes.length;at+=32768)result+=String.fromCharCode(...bytes.subarray(at,at+32768));return btoa(result);};
@@ -6,7 +7,9 @@ async function keyFor(password,salt){if(typeof password!=='string'||password.len
 export function safePreferences(input={}) {
  if(!input||typeof input!=='object'||Array.isArray(input))return {};
  const out={};
- for(const k of ['reduceMotion','transparency','notifications','showSeconds','desktopIcons','sounds','startFullscreen','highContrast'])if(typeof input[k]==='boolean')out[k]=input[k];
+ if(['center','left'].includes(input.taskbarAlignment))out.taskbarAlignment=input.taskbarAlignment;
+ if(Array.isArray(input.startPins))out.startPins=normalizePinnedApps(input.startPins);
+ for(const k of ['reduceMotion','transparency','notifications','showSeconds','desktopIcons','sounds','startFullscreen','highContrast','doNotDisturb'])if(typeof input[k]==='boolean')out[k]=input[k];
  if(['light','dark','system'].includes(input.theme))out.theme=input.theme;
  if(['blue','aurora','dusk','midnight','light','custom'].includes(input.wallpaper))out.wallpaper=input.wallpaper;
  if(/^#[0-9a-f]{6}$/i.test(input.accent || ''))out.accent=input.accent;

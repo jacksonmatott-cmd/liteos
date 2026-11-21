@@ -12,7 +12,6 @@ export function planLibrary(input,{music=true}={}){
  for(const required of ['data/h3bitmap.lod','data/h3sprite.lod','data/heroes3.snd'])if(!files.some(f=>f.path.toLowerCase()===required&&f.size>0))throw Error('Missing '+required+'. Choose your installed Heroes III Complete / Shadow of Death folder, or a ZIP of it.');
  if(files.length>MAX_FILES||total>MAX_TOTAL)throw Error('The game library exceeds 10,000 files or 4 GB. Try excluding music.');return {files,total,skipped:input.length-files.length};
 }
-export function inspectOblivion(input){const names=input.map(f=>(f.path||f.webkitRelativePath||f.name||'').replaceAll('\\','/').toLowerCase());const checks=[['binkw32.dll',names.some(n=>/(^|\/)binkw32\.dll$/.test(n))],['Oblivion.exe',names.some(n=>/(^|\/)oblivion\.exe$/.test(n))],['Data/Oblivion.esm',names.some(n=>/(^|\/)data\/oblivion\.esm$/.test(n))],['Data/*.bsa archives',names.some(n=>/(^|\/)data\/[^/]+\.bsa$/.test(n))]];return {checks,complete:checks.every(x=>x[1]),bytes:input.reduce((n,f)=>n+(f.size||0),0)};}
 
 let database;
 export function gameDB(){return database??=new Promise((resolve,reject)=>{const r=indexedDB.open('liteos-games',1);r.onupgradeneeded=()=>r.result.createObjectStore('libraries');r.onsuccess=()=>{r.result.onversionchange=()=>{r.result.close();database=null;};resolve(r.result);};r.onerror=()=>reject(r.error);});}

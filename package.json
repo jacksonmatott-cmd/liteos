@@ -1,9 +1,9 @@
 {
   "name": "liteos",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "private": true,
   "type": "module",
-  "description": "LiteOS browser desktop with free device storage, embedded Google and local family profiles",
+  "description": "LiteOS modern browser desktop with local family profiles, file storage and optional AI",
   "scripts": {
     "build": "node scripts/build.mjs",
     "dev": "node scripts/dev.mjs",
