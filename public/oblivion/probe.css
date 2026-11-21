@@ -3,3 +3,16 @@
 .loader-option{display:flex;align-items:flex-start;gap:9px;font-size:14px;line-height:1.5;padding:10px 0}.loader-option input{margin-top:4px}
 
 .compatibility-card{margin:18px 0;padding:16px;border:1px solid #cbdcf2;border-radius:10px;background:#f4f8ff}.compatibility-label{font-size:.75rem;letter-spacing:.12em;font-weight:750;color:#3b689c}.compatibility-card p{font-size:.9rem}.compatibility-card .compact-note,.path-hint{font-size:.8rem;color:#62738c}.path-hint{overflow-wrap:anywhere}.compatibility-card summary{cursor:pointer;min-height:32px}.compatibility-card ul{padding-left:20px;font-size:.85rem;line-height:1.8;overflow-wrap:anywhere}.compatibility-card .found{color:#277355}.compatibility-card .missing{color:#855252}.compatibility-card input{flex-shrink:0;width:17px;height:17px;accent-color:#3278de}#steam-exe{font-weight:600;color:#31557e}
+
+/* The upstream canvas stylesheet is fullscreen-only; this setup page scrolls. */
+html{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto;scroll-padding-top:130px;scrollbar-gutter:stable}
+body{display:block;height:auto;min-height:100%;overflow:visible;touch-action:pan-y}
+.launch-bar{position:sticky;top:0;z-index:40;max-width:1080px;margin:0 auto 16px;padding:13px 22px;background:#edf2faf5;border-top:1px solid #d8e2ef;border-bottom:1px solid #cbd8e9;box-shadow:0 5px 16px #233b5c12;display:flex;align-items:center;gap:15px;justify-content:space-between}
+.launch-copy{min-width:0;flex:1}.launch-copy strong{display:block;font-size:15px}.launch-copy span{display:block;font-size:13px;line-height:1.4;color:#526a87;margin-top:4px;overflow-wrap:anywhere}.launch-actions{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.launch-actions button{white-space:nowrap}.setup-link{font-size:13px;color:#2e609f;min-height:42px;display:flex;align-items:center;padding:5px 4px}.probe-main,.probe-header,.probe-footer{width:100%}#runtime-setup,#probe-runtime{scroll-margin-top:130px}#dropzone{touch-action:none}.probe-panel:focus-within{scroll-margin-top:130px}
+body.game-fullscreen{height:100dvh;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+body.game-fullscreen .probe-header,body.game-fullscreen #game-setup,body.game-fullscreen #experiment-notes,body.game-fullscreen .probe-footer{display:none}
+body.game-fullscreen .launch-bar{position:relative;max-width:none;width:100%;margin:0;flex:0 0 auto}
+body.game-fullscreen .setup-link{display:none}body.game-fullscreen .probe-main{max-width:none;padding:0;gap:0;min-height:0;flex:1;display:flex;flex-direction:column}
+body.game-fullscreen #probe-runtime{border:0;border-radius:0;box-shadow:none;margin:0;padding:0 8px;flex:1;min-height:0;display:flex;flex-direction:column}
+body.game-fullscreen #probe-runtime>h2,body.game-fullscreen #console{display:none}body.game-fullscreen #app{flex:1;min-height:0}body.game-fullscreen #dropzone{flex:1;min-height:0}
+@media(max-width:600px){.launch-bar{padding:11px 14px;gap:8px;align-items:stretch;flex-direction:column}.launch-copy strong{font-size:14px}.launch-copy span{font-size:13px}.launch-actions{gap:7px;justify-content:flex-end}.launch-actions button{min-height:43px;padding:9px 12px}.setup-link{margin-right:auto}.probe-header{padding-bottom:10px}}

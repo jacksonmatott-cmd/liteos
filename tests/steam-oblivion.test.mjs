@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {planOblivionImport} from '../public/oblivion/probe-files.js';
 import {BASE_ARCHIVES,steamInstallation,inspectPEBytes,adler32,prepareSteamProfile,patchIni,classifyWineLine} from '../public/oblivion/steam-profile.js';
+import {launchAvailability} from '../public/oblivion/launch-state.js';
 const file=(path,text='fixture')=>Object.assign(new Blob([text]),{name:path.split('/').at(-1),webkitRelativePath:path});
 const steamFiles=()=>['Oblivion.exe','binkw32.dll','Oblivion_default.ini','Data/Oblivion.esm',...BASE_ARCHIVES.map(n=>'Data/'+n),'Data/Shaders/shaderpackage001.sdp','Data/Video/intro.bik','Data/Music/Explore/song.mp3','Data/Knights.esp','Data/Knights.bsa'].map(p=>file('SteamLibrary/steamapps/common/Oblivion/'+p));
 test('Steam folder selection preserves loose assets and isolates one game subtree',()=>{
@@ -47,4 +48,20 @@ test('INI changes preserve unrelated settings and remove conflicting duplicate t
 test('Wine diagnostics distinguish missing bundled files, Steam client failures and graphics failures',()=>{
  assert.equal(classifyWineLine('0108:err:module:import_dll Library binkw32.dll (which is needed by Oblivion.exe) not found').kind,'dependency');
  assert.equal(classifyWineLine('Fatal error: SteamAPI_Init() failed.').kind,'steam-client');assert.equal(classifyWineLine('wined3d: failed to initialize renderer').kind,'graphics');assert.equal(classifyWineLine('Launching Oblivion.exe'),null);
+});
+test('a selected EXE and Wine ZIP permit one-click Start before manual engine preparation',()=>{
+ const selected={authorized:true,hasExe:true,hasRoot:true,ready:false};
+ assert.equal(launchAvailability(selected).enabled,true);assert.match(launchAvailability(selected).hint,/prepare the engine/);
+ assert.equal(launchAvailability({...selected,ready:true,hasRoot:false}).enabled,true);
+ assert.equal(launchAvailability({...selected,loading:true}).enabled,false);assert.equal(launchAvailability({...selected,busy:true}).enabled,false);
+ assert.equal(launchAvailability({...selected,authorized:false}).enabled,false);
+ assert.match(launchAvailability({...selected,hasRoot:false}).hint,/Wine system ZIP/);
+ assert.match(launchAvailability({...selected,memoryError:'Acknowledge the memory requirement.'}).hint,/Acknowledge/);
+});
+test('launch controls expose startup failures and distinguish a start request from guest output',()=>{
+ const state={authorized:true,hasExe:true,hasRoot:true,started:true};
+ assert.match(launchAvailability(state).hint,/Starting Wine/);
+ assert.match(launchAvailability({...state,coreStarted:true}).hint,/Wine is running/);
+ assert.equal(launchAvailability({...state,issue:'Direct3D failed'}).hint,'Direct3D failed');
+ assert.equal(launchAvailability({...state,failed:true}).enabled,false);assert.match(launchAvailability({...state,failed:true}).hint,/Reload/);
 });

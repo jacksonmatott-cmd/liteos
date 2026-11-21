@@ -1,4 +1,4 @@
-export const VERSION = '0.3.1';
+export const VERSION = '0.3.2';
 export function sandboxPolicy(){return `default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'; sandbox allow-scripts allow-downloads`;}
 export class HttpError extends Error { constructor(status,message){super(message);this.status=status;} }
 export const uid=()=>crypto.randomUUID();
