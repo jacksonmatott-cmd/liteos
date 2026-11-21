@@ -46,5 +46,16 @@
     "sha256": "d950fe71d6c078e7218a143f675fde80f80e5c451a8c07a43d6425302be900c0",
     "verification": "The browser verifies the selected original vendor ZIP against its full byte length and SHA-256 before loading. This ZIP is not mirrored, proxied, or redistributed by LiteOS.",
     "load_mode": "user-selected-local-file"
+  },
+  "archive": {
+    "bytes": 1291208,
+    "sha256": "d7c6084f0407da3afe3eab229d23841fde3f8916458894f1ab2889b690ed7036",
+    "parts": [
+      "vendor/boxedwine-runtime.tar.gz.part-0",
+      "vendor/boxedwine-runtime.tar.gz.part-1",
+      "vendor/boxedwine-runtime.tar.gz.part-2",
+      "vendor/boxedwine-runtime.tar.gz.part-3",
+      "vendor/boxedwine-runtime.tar.gz.part-4"
+    ]
   }
 }
