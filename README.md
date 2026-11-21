@@ -1,71 +1,65 @@
-# LiteOS
+# LiteOS 0.2 — Device edition
 
 **A little lighter. A lot more you.**
 
-LiteOS is a working browser desktop inspired by the Windows 10 interface. It has its own Lite apps, LiteFS virtual file structure, and a small batch-inspired language called LiteScript. It adapts to desktop, tablet, and phone screens.
+LiteOS is a Windows-inspired browser desktop for computers, tablets, and phones. This edition needs **no hosted database, R2 bucket, storage subscription, or billing setup for its files and accounts**. Files, profiles, passwords, settings, and family policies are saved in the browser's free IndexedDB storage. GitHub stores the source; a small Cloudflare Worker serves the application and optional AI endpoint.
 
-This is a **browser OS prototype**, not a bootable kernel or a Windows virtual machine. GitHub stores the source; Cloudflare Workers runs the server. Do not use GitHub Pages or a static-only Cloudflare upload for the cloud features.
+## Included
 
-## What works
+- Desktop windows, Start screen, taskbar, search, lock screen, touch layout, custom backgrounds, themes, and accessibility settings.
+- **Google inside LiteOS:** Google and Lite Browser open an actual Google webpage in an embedded browser window. The LiteOS address bar searches in that same frame. Focus, Start, minimize, and restore preserve the frame. This uses Google's currently frame-compatible `webhp?igu=1` / `search?igu=1` views, not a screenshot, proxy, or a replacement search launcher. Google can change these views or show a bot check. Some destinations and Google sign-in block framing; the help button offers a separately opened tab when needed. Native Chrome is not installed or executed.
+- Lite Write, Sheets with formulas and CSV import/export, Notes, Files, Paint, Photos, Calculator, Mines, and Tic-tac-toe run inside LiteOS.
+- Single-file HTML apps run in an isolated, offline sandbox. Compatible HTTPS web apps can also be embedded. An App Center includes a working Counter demo and an HTML app editor. Windows EXE/MSI files and Steam games can be stored and downloaded; they need a compatible remote Windows host to execute.
+- LiteFS folders, import, rename, preview, downloads, Recycle Bin, restore, permanent deletion, and batch-inspired LiteScript commands.
+- Password-protected local parent and child profiles with separate file spaces. Passwords use salted PBKDF2-SHA256 hashes (210,000 iterations). There are no built-in passwords. Local profiles do not authenticate to GitHub or Google.
+- Parent-approved group policy changes and a local audit log for security-tool exports. Children have AI, Share, and external websites disabled by default. These are LiteOS interface controls; someone who administers the browser or device can inspect or change local storage. They do not manage Windows Group Policy, antivirus, a firewall, or the rest of the device.
+- **Settings → System → Danger** contains one button, **Clear Browser Data**. A same-family parent must enter their password. A one-use approval expires after 60 seconds. This removes **all LiteOS profiles and files on that browser**, plus its LiteOS preferences and cookies. It cannot clear other sites or the browser's entire history.
 
-- Move, resize, minimize, and maximize desktop windows; taskbar, search, Start screen, quick settings, clock, lock screen, touch layouts, and keyboard shortcuts.
-- Persistent device guest files, or private cloud files under password-protected accounts.
-- Lite Files: folders, text documents, import, rename, preview, download, Recycle Bin, restore, permanent deletion, expiring download links, and share revocation.
-- Lite Notes: edit and save plain text and `.lite` scripts, download documents, and protect unsaved work.
-- Lite Assistant: server-connected Ollama, Groq, or Gemini, with local LiteOS help in guest mode. AI cannot silently access your files or act on your behalf.
-- Lite Terminal: bounded LiteScript interpreter with quoted paths, variables, file operations, and app launching. No host shell or JavaScript eval.
-- Lite Apps launcher, Lite Write documents with formatting and preview, Lite Sheets with formulas and CSV import/export, Lite Paint, Photos, Calculator, Mines, and pass-and-play Tic-tac-toe.
-- Lite Apps: import or create single-file HTML apps, run the included Little Counter demo, and keep apps running while opening Start or minimizing their window. Lite Store installs `.liteapp` web manifests; compatible apps such as Photopea open inside LiteOS, while sites that block embedding open in a normal browser tab.
-- Settings: wallpapers, custom photos, light/dark/device theme, accent colors, transparency, large text, high contrast, reduced motion, lock duration, session management, family accounts, group policies, share expiry, upload limits, privacy information, network checks, and audit export.
-- Parent and child accounts with separate private file spaces. Children cannot use cloud AI or create public shares by default.
-- **Settings → System → Danger** has one button, **Clear Browser Data**, which requires password approval from a parent in the same family. It clears LiteOS data on this browser and signs out its session. It does not delete cloud files or another website’s data.
+## Sharing and moving between devices
 
-## Windows and Steam apps
+Lite Files → Share sends a copy through the device's file share sheet when supported, with Download as a fallback. LiteOS does not upload the file or create a public share link. Copies sent to other people cannot be revoked. Local policies govern the Share action, not the device's Downloads folder or other apps.
 
-Windows `.exe`, `.msi`, Steam files, and other native applications can be imported and downloaded. They **do not execute inside LiteOS**. Cloudflare does not host a Windows desktop or a GPU game server. Google and similar websites open in normal browser tabs because many sites block embedding. Remote Windows accepts a URL for a compatible, separately running browser streaming service. No streaming service is included; providers that require same-origin iframe privileges or block framing must be opened in a separate tab.
+**Settings → Privacy → Your data** exports and restores `.litebackup` workspace files. Backups contain files and appearance settings encrypted with AES-256-GCM and a separate password you choose. They exclude account credentials and family permissions. Keep that password: there is no recovery service. Restore merges into the current workspace and renames conflicting files instead of overwriting them. Backups support 2,000 entries / 50 MB; download larger files separately. Per-file imports are limited to 20 MB (or the family's smaller limit); each profile has a 250 MB application allowance, also subject to the browser's own quota.
 
-## Import this GitHub repository into Cloudflare
+Local profiles and passwords exist only on their current browser and website origin. They **do not automatically sync to other devices**. Private-browsing modes, storage eviction, clearing site data, or changing the website's domain can make local data unavailable. Export backups of important work. Existing guest files in `liteos-local` remain compatible. Earlier D1/R2 accounts do not automatically become local profiles: export their files from the earlier version before switching if needed. Deployment does not delete the old cloud database or bucket.
 
-Use **Workers & Pages → Create application → Import a repository** and choose this repository as a **Worker**, not a Pages static site.
+## Import the repository into Cloudflare
+
+Choose **Workers & Pages → Create application → Import a repository**, select this repository as a Worker, and use:
 
 | Setting | Value |
 | --- | --- |
 | Branch | `main` |
-| Root directory | Leave blank |
+| Root | Leave blank |
 | Build command | `npm run build` |
 | Deploy command | `npm run deploy` |
-| Runtime | Node.js 22 or newer for builds |
+| Node.js | 22 or newer |
 
-The deploy script explicitly checks for the `BUCKET` R2 bucket and creates it if missing. It reuses the existing `DB` D1 database by its configured ID or name, creates it only when missing, and writes the actual database ID into the build’s configuration. Database migrations run **before** publishing the Worker. Existing files and databases are preserved. This does not rely on automatic binding provisioning. **Your Cloudflare account must have R2 enabled** for file imports. R2 activation may require a billing profile even while usage is inside its free allowance; this project does not claim that activation is available without one. Worker, D1, R2 and AI provider quotas remain account-specific.
+The deploy command publishes the Worker directly. It does not provision storage, apply database migrations, or access R2. No database IDs or bucket names are required. This removes the prior `liteos-files` missing-bucket (10085) dependency. If you manually added DB/BUCKET bindings in the Cloudflare dashboard, remove those bindings from this Worker; you can retain the underlying resources. Worker hosting quotas still belong to your Cloudflare account. See [Workers Free limits](https://developers.cloudflare.com/workers/platform/limits/).
 
-Official references: [Workers Builds](https://developers.cloudflare.com/workers/ci-cd/builds/), [automatic provisioning](https://developers.cloudflare.com/changelog/post/2025-10-24-automatic-resource-provisioning/), [D1 migrations](https://developers.cloudflare.com/d1/reference/migrations/), [R2](https://developers.cloudflare.com/r2/).
+## Optional connected AI
 
-The hosted review copy already has the previously supplied Ollama key installed as an encrypted server secret. A live check confirmed that the key is valid, but Ollama currently returns HTTP 402 because that account has no inference credits. LiteOS falls back to clearly labeled built-in help; cloud AI becomes usable when the existing provider account has credits. No new key is needed. **Secrets are not copied by GitHub import.** On your separate Cloudflare Worker, reuse that same key as the `OLLAMA_API_KEY` secret; a new key is not necessary. `AI_MODEL` defaults to `gemma4:31b`. An existing Groq or Gemini key is also supported as `GROQ_API_KEY` or `GEMINI_API_KEY`, with a matching `AI_MODEL` value. Never put a key in GitHub, a `.lite` file, an app manifest, a URL, or browser code.
+Built-in LiteOS help works locally without an API or payment. Connected AI is optional and subject to the provider's own quota or charges. The previously supplied Ollama key remains a server secret in the hosted review copy; its last live response was HTTP 402 because the provider account has no inference credits. No key is included in this public repository.
 
-When using Wrangler locally, install a secret without putting it on a command line:
+On a separate Cloudflare deployment, reuse an existing `OLLAMA_API_KEY` (or `GROQ_API_KEY` / `GEMINI_API_KEY`) secret. Set a private `AI_ACCESS_CODE` secret as well: local profiles are not trusted server identities, so the shared provider key stays disabled until that code exists. Sign into a local profile and choose **Connect optional AI** in Lite Assistant to enter the code for the current session. The access code stays in memory and is cleared on sign-out. `AI_MODEL` defaults to `gemma4:31b`; change it for other providers.
+
+Install secrets through hidden Wrangler prompts, never in source or command-line values:
 
 ```sh
 npx wrangler secret put OLLAMA_API_KEY
+npx wrangler secret put AI_ACCESS_CODE
 ```
 
-Paste the existing key at the hidden prompt. The cloud provider key is shared by authenticated LiteOS users on that deployment; each user is limited to 20 AI requests per hour. Sharing a deployment with many people can consume the provider’s quota.
+The Worker accepts same-origin AI requests with the access code, fixes provider destinations, bounds request size, and applies best-effort throttling of 20 requests per IP/hour per Worker instance. This throttle is not a durable spending cap; configure spending limits with the AI provider if you enable it. Accounts and files never go to the AI server automatically.
 
-## If a Cloudflare build reports a missing R2 bucket (10085)
-
-Use the latest `main` commit and ensure the Worker’s **Settings → Build → Deploy command** is `npm run deploy`. Calling `npx wrangler deploy` directly skips LiteOS storage setup. The next build verifies or creates `liteos-files`, resolves `liteos-db`, applies migrations, and then publishes.
-
-If storage setup reports that R2 is disabled, enable R2 in your own Cloudflare account. If it reports access denied, the build’s Cloudflare API token needs **Workers R2 Storage: Edit** and **D1: Edit**, as well as its existing Worker deployment permissions. The script stops before publishing when storage or migrations fail, and reports the underlying Cloudflare error. It never deletes a bucket or database. [Workers Builds settings](https://developers.cloudflare.com/workers/ci-cd/builds/configuration/).
-
-## Run locally
-
-Install [Node.js 22+](https://nodejs.org/) and run:
+## Development
 
 ```sh
 npm ci
 npm run dev
 ```
 
-The development command creates a local D1 database, applies migrations, builds the app, and starts Wrangler at `http://localhost:3000`. It watches `public/` and `worker/`. For local AI only, put `OLLAMA_API_KEY` in an ignored `.dev.vars` file; never commit that file. Production secrets remain separate.
+Open `http://localhost:3000`. There are no migrations or local cloud database dependencies. Optional development secrets belong in ignored `.dev.vars` files.
 
 ```sh
 npm test
@@ -73,83 +67,4 @@ npm run build
 npm run validate
 ```
 
-## First use
-
-Guest mode works immediately and stores files in IndexedDB. Choose the profile icon to create a cloud account; this starts a new family with a parent. Create child accounts through **Settings → Accounts → Family**. Each family member uses a globally unique username. Names, passwords, and files do not come from your GitHub account. There is no hardcoded default password, email verification, email password recovery, or shared guest password. Save your password; password recovery is not included in this prototype.
-
-Family policies are stored on the server. AI, file-import, and public-sharing restrictions are checked on every corresponding request; disabling sharing also disables existing links. Terminal and external-app restrictions govern the LiteOS interface and cannot restrict the phone’s browser or the underlying operating system. Family roles do not grant parents read access to another member’s private files.
-
-## Apps that run inside LiteOS
-
-Open **Lite Apps** on the desktop or Start screen. These run as actual tools inside LiteOS windows:
-
-| App | What works |
-| --- | --- |
-| Lite Write | Markdown documents, bold/italic/headings/lists, formatted preview, save and export `.md` files |
-| Lite Sheets | 8 columns × 24 rows, cell references, arithmetic, `SUM`, `AVERAGE`, `MIN`, `MAX`, save `.litesheet`, import/export CSV |
-| Google | Start Google searches inside LiteOS and open official search results, Gmail, Drive, Docs, and Maps in a browser tab |
-| Lite Notes | Plain text and LiteScript editing |
-| Lite Paint / Photos | Drawing, saved PNGs, pictures, backgrounds |
-| Lite Calculator / Games | Arithmetic, Mines, Tic-tac-toe |
-| Imported HTML apps | Inline HTML/CSS/JavaScript in an isolated app window; try **Run demo** |
-
-**Import app** accepts `.html`, `.htm`, and `.liteapp` files into `L:/Home/Apps`. **Create HTML app** includes an editable starter app. HTML app windows retain their running state while you open Start, switch windows, or minimize them; closing or restarting ends that app session. Use **Edit code** to change an HTML app, save, then **Restart app** to load the changes. The sandbox does not grant imported code access to LiteOS account cookies, storage, or cloud-file APIs.
-
-Google’s search window uses normal links and a standard Google search form, so launching does not depend on asynchronous pop-ups. Search results and Google sign-in remain in a normal browser tab; LiteOS does not claim to embed the Google website.
-
-Lite Sheets preserves formulas in its own file format and exports calculated values to CSV. It detects circular references and invalid formulas, and never evaluates JavaScript. Larger CSVs are rejected with a size explanation rather than silently truncated. It is a basic spreadsheet, not an Excel workbook engine; `.xlsx` and `.docx` support is not included.
-
-## LiteFS
-
-| Path | Purpose |
-| --- | --- |
-| `L:/Home/Desktop` | Personal desktop files |
-| `L:/Home/Documents` | Text and scripts |
-| `L:/Home/Downloads` | Imported downloads |
-| `L:/Home/Pictures` | Photos and paintings |
-| `L:/Home/Projects` | Project folders |
-| `L:/Home/Apps` | Web app manifests |
-
-Folder entries and small text are stored in D1. Imported file bytes are stored in R2. A cloud account has a 250 MB prototype file allowance and up to 20 MB per imported file, reducible by a parent. Browser guest storage depends on available browser quota and can be evicted by the browser. A preference cookie stores only theme/wallpaper identifiers; the authenticated session cookie is HttpOnly, Secure on HTTPS, SameSite=Strict, with an opaque random token stored as a SHA-256 hash on the server. Passwords use per-user salts and PBKDF2-HMAC-SHA256 at 100,000 iterations, compatible with Workers WebCrypto. TLS protects transport; this is not end-to-end encrypted storage.
-
-## LiteScript
-
-```bat
-@echo off
-rem A first script
-set NAME=friend
-echo Hello, %NAME%!
-mkdir Projects/Demo
-write "Projects/Demo/My note.txt" Made with LiteScript
-type "Projects/Demo/My note.txt"
-open notes
-```
-
-Supported: `HELP`, `ECHO`, `SET`, `DIR`, `CD`, `PWD`, `MKDIR`, `TYPE`, `WRITE`, `APPEND`, `COPY`, `MOVE`, `DEL`, `OPEN`, `DATE`, `WHOAMI`, `VER`, `CLEAR`, `CLS`, `REM`. Quotes preserve spaces. Variables use `%NAME%`. `DEL` moves a file to Recycle Bin. Commands run within `L:/Home`; scripts cannot access host files, run Windows commands, execute JavaScript, change server policies, or bypass permissions. There are no loops, network commands, or executable installers. Scripts have a 200-line limit per execution.
-
-## Web apps
-
-Save a JSON manifest under `L:/Home/Apps/My app.liteapp`:
-
-```json
-{"name":"My app","url":"https://example.com","mode":"external"}
-```
-
-`external` opens a separate tab. `embedded` runs an HTTPS site in a sandbox without same-origin access to LiteOS; the site must support embedding. Standalone imported HTML runs inside its own LiteOS window with inline JavaScript and CSS. Its sandbox has an opaque origin, cannot access LiteOS files or accounts, and blocks network requests, external scripts, forms, popups, and top-level navigation. User-triggered downloads are allowed. Keep required code and data inside the single HTML file. Not all third-party apps are compatible.
-
-## Security integration and prototype limits
-
-Parents can download up to 200 recent family events as structured JSON from Lite Security or Settings → Security → Audit log. Integrate that export with your own SIEM. No antivirus engine, host group-policy editor, firewall control, continuous SIEM delivery, or device-level parental filtering is included. The audit log records cloud actions; it does not monitor another website or the host OS.
-
-The account API rejects cross-origin state-changing requests, rate-limits sign-in attempts, checks file ownership, and uses one-use short-lived parent approvals. The test suite covers authentication, cross-account access, child policies, share revocation, parent approval boundaries, password changes, path traversal, and LiteScript sandbox boundaries. This is a prototype, without a production security audit, MFA, account recovery, backups, or storage malware scanning.
-
-## Source map
-
-- `public/`: browser interface, styles, icons, generated LiteOS wallpaper, LiteScript interpreter.
-- `worker/`: Cloudflare-compatible API, session, permissions, and file logic.
-- `drizzle/`: schema migrations and migration journal.
-- `scripts/`: deterministic packaging, local development, deployment.
-- `tests/`: real-SQL security and interpreter checks.
-- `wrangler.jsonc`: Cloudflare Worker and logical storage bindings.
-
-The build embeds static assets in the Worker module for a portable deployment. No external front-end CDN is required. The LiteOS wallpaper is an original generated asset; the interface uses original SVG icons and Lite branding.
+GitHub Actions runs these checks on pushes. The build packages the frontend and server together; the frontend itself can also run from static hosting with local profiles and built-in help. The optional AI route requires the Worker. The app is a browser desktop prototype, not a bootable kernel or a native Windows virtual machine.

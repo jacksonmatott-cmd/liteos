@@ -4,19 +4,6 @@
   "main": "dist/server/index.js",
   "compatibility_date": "2026-11-20",
   "workers_dev": true,
-  "d1_databases": [
-    {
-      "binding": "DB",
-      "database_name": "liteos-db",
-      "migrations_dir": "drizzle"
-    }
-  ],
-  "r2_buckets": [
-    {
-      "binding": "BUCKET",
-      "bucket_name": "liteos-files"
-    }
-  ],
   "vars": {
     "AI_MODEL": "gemma4:31b"
   },
