@@ -9,7 +9,8 @@ export class SoftwareView{
  constructor(canvas){this.canvas=canvas;this.ctx=canvas.getContext('2d',{alpha:false});if(!this.ctx)throw Error('This browser cannot create a drawing canvas.');this.last=0;this.look={x:0,y:0,z:-1};}
  async init(){const tiles=await loadTiles(32,true);this.textures=tiles.map(c=>c.getContext('2d').getImageData(0,0,32,32).data);this.actorArt=await actorResources();this.resize();}
  resize(){const w=this.canvas.clientWidth,h=this.canvas.clientHeight;if(!w||!h)return;this.canvas.width=w>h?176:112;this.canvas.height=Math.round(this.canvas.width*h/w);this.image=this.ctx.createImageData(this.canvas.width,this.canvas.height);this.depth=new Float32Array(this.canvas.width*this.canvas.height);this.canvas.style.imageRendering='pixelated';}
- load(world){this.world=world;this.last=0;}
+ setPerformance(policy){this.policy=policy;}
+ load(world){this.actorMotion?.clear();this.world=world;this.last=0;}
  changed(){this.last=0;}
  direction(){return this.look;}
  draw(p,time,hit){if(this.world.version===2)this.world._center=[Math.floor(p.x/16),Math.floor(p.z/16)];const sy=Math.sin(p.yaw),cy=Math.cos(p.yaw),sp=Math.sin(p.pitch),cp=Math.cos(p.pitch);this.look={x:-sy*cp,y:sp,z:-cy*cp};if(performance.now()-this.last<80)return;this.last=performance.now();const {width,height,data}=this.image,blocks=this.world.blocks,world=this.world,range=bounds(world),day=world.dimension==='nether'?.5:world.dimension==='end'?.35:Math.max(.12,Math.sin(time*Math.PI*2)),sky=world.dimension==='nether'?[65,18,16]:world.dimension==='end'?[20,13,32]:[30+day*130,48+day*160,68+day*154],tan=.7,aspect=width/height;

@@ -1,6 +1,6 @@
 import {normalizePinnedApps,calendarDays,localDateKey} from './desktop-state.js';
 const H=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const SETTINGS=[['Background','wallpaper photo personalize','personal','wallpaper'],['Theme','dark light appearance','personal','theme'],['Start and taskbar','pinned alignment desktop','personal','start'],['Storage','files backup space','system','storage'],['Display','text transparency screen','system','display'],['Family','parent child accounts','accounts','family'],['Group policies','security permissions','security','policies']];
+const SETTINGS=[['Performance','speed battery efficiency quality graphics','system','performance'],['Background','wallpaper photo personalize','personal','wallpaper'],['Theme','dark light appearance','personal','theme'],['Start and taskbar','pinned alignment desktop','personal','start'],['Storage','files backup space','system','storage'],['Display','text transparency screen','system','display'],['Family','parent child accounts','accounts','family'],['Group policies','security permissions','security','policies']];
 function visibleApps(c){return Object.keys(c.apps).filter(a=>a!=='apphost'&&c.canOpen(a));}
 function results(c,query){
  const q=query.trim().toLowerCase(),names=visibleApps(c).filter(a=>(c.apps[a].name+' '+c.apps[a].short).toLowerCase().includes(q));

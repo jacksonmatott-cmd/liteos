@@ -76,3 +76,10 @@ test('account writes serialize and oversized text is rejected without data loss'
  await assert.rejects(()=>e.call('/files',{path:'/Home/Documents/large.txt',content:'x'.repeat(1048577)}),/1 MB/);
  assert.equal((await e.call('/files',null,'GET')).files.length,4);
 });
+
+test('policy updates reject inherited object keys and feature checks reject unknown names',async()=>{
+ const e=environment();await register(e);
+ for(const key of ['__proto__','constructor','toString'])await assert.rejects(e.call('/policies',{parentPassword:'Test-password-123',policies:JSON.parse('{"'+key+'":{"allowAI":false}}')},'PATCH'),/Unknown policy/);
+ await assert.rejects(e.call('/feature',{feature:'__proto__'}),/Unknown feature/);
+ assert.equal((await e.call('/me',{},'GET')).policies.allowAI,true);assert.equal({}.allowAI,undefined);
+});

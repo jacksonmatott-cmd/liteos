@@ -10,6 +10,7 @@ export function safePreferences(input={}) {
  if(['center','left'].includes(input.taskbarAlignment))out.taskbarAlignment=input.taskbarAlignment;
  if(Array.isArray(input.startPins))out.startPins=normalizePinnedApps(input.startPins);
  for(const k of ['reduceMotion','transparency','notifications','showSeconds','desktopIcons','sounds','startFullscreen','highContrast','doNotDisturb'])if(typeof input[k]==='boolean')out[k]=input[k];
+ if(['balanced','efficiency','quality'].includes(input.performanceMode))out.performanceMode=input.performanceMode;
  if(['light','dark','system'].includes(input.theme))out.theme=input.theme;
  if(['blue','aurora','dusk','midnight','light','custom'].includes(input.wallpaper))out.wallpaper=input.wallpaper;
  if(/^#[0-9a-f]{6}$/i.test(input.accent || ''))out.accent=input.accent;

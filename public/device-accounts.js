@@ -85,7 +85,7 @@ export class DeviceAccounts {
     const pol={...DEVICE_POLICIES,...household.policies};
     const requireParent=() => { if(u.role!=='parent') fail('A parent account is required.',403); };
     if (path === '/me') return {user:publicUser(u),policies:pol};
-    if (path === '/feature') { policy(u,pol,d.feature); return {ok:true}; }
+    if (path === '/feature') { if(!Object.hasOwn(DEVICE_POLICIES,d.feature)||typeof DEVICE_POLICIES[d.feature]!=='boolean')fail('Unknown feature.',400); policy(u,pol,d.feature); return {ok:true}; }
     if (path === '/auth/logout') { meta.sessions=meta.sessions.filter(s=>s!==session); await save(); await this.setToken(null); return {ok:true}; }
     if (path === '/preferences' && method === 'PATCH') { u.preferences={...u.preferences,...d}; await save(); return {preferences:u.preferences}; }
     if (path === '/password' && method === 'POST') {
@@ -101,7 +101,7 @@ export class DeviceAccounts {
     if (path === '/policies' && method === 'PATCH') {
       requireParent(); await reauth(u,d.parentPassword);
       for (const [key,value] of Object.entries(d.policies || {})) {
-        if (!(key in DEVICE_POLICIES)) fail('Unknown policy.');
+        if (!Object.hasOwn(DEVICE_POLICIES,key)) fail('Unknown policy.');
         if (typeof DEVICE_POLICIES[key] === 'boolean' && typeof value !== 'boolean') fail('Invalid policy value.');
         if (key === 'maxUploadMB' && ![1,5,10,20].includes(value)) fail('Choose a supported file size.');
         if (key === 'autoLockMinutes' && ![0,5,15,30,60].includes(value)) fail('Choose a supported lock timeout.');

@@ -1,4 +1,4 @@
-# LiteOS 0.8.0 — The visual update
+# LiteOS 0.9.0 — Performance and reliability
 
 **A little lighter. A lot more you.**
 
@@ -103,3 +103,17 @@ The build packages the frontend and server together; the frontend itself can als
 ## Visual update
 
 Mobs now use animated, volumetric cuboid geometry adapted from Mojang’s published Bedrock samples, with the owner-supplied default Minecraft skins. Both WebGL and the software fallback draw the same UV-mapped 3D models, including the dragon. Movement poses are LiteCraft approximations. See `public/litecraft/textures/LICENSE.txt` for provenance. New generator-3 worlds retain the 13 biomes and add connected ore lenses, deepslate variants, dimension-correct Nether gold/quartz, blackstone/basalt and contrasting stone/gravel patches. Previous generator-1/2 terrain remains intact; renderers also display old Nether gold with its dimension-correct texture. Furnace, crafting-table and chest faces now use their correct textures, and grass sides have the vanilla tinted overlay.
+
+## System optimization update (0.9.0)
+
+Settings → System → Performance offers Balanced, Efficiency and Quality modes. Efficiency caps LiteCraft rendering at 30 FPS, lowers pixel density and disables desktop transparency; the simulation remains paused while minimized or in a hidden tab. Visible paused worlds draw at 5 FPS and the title preview at 15 FPS. This is a rendering cap, not a guaranteed frame rate. WebGL resources are released when leaving the game.
+
+Static assets receive build-time SHA-256 validators and private conditional caching. Unchanged GETs return 304 without decoding/transferring asset bytes; HEAD requests skip binary decoding entirely. Missing routes retain security headers. The desktop opens without waiting for the optional status service, with bounded network timeouts and parallel initial storage reads.
+
+Lite Files displays at most 100 entries per page and filters across the whole folder. Window movement coalesces pointer updates into animation frames; double-clicking a desktop shortcut opens one window. Paint canvases survive unrelated desktop renders. OS reduced-motion changes are respected, and clocks avoid redundant text writes.
+
+Storage diagnostics show the browser's estimated origin usage/quota and persistent-storage grant, with a user-triggered request button. Transaction aborts, failed/blocked database opens and quota failures report actionable errors. World-save revision tracking keeps edits made during a save marked as pending. Existing local databases and worlds need no migration. Workspace backup preferences include the selected performance mode.
+
+LiteCraft caches mob poses between animation ticks, skips unchanged mesh uploads and coalesces block-edit rebuilds into a bounded chunk queue. Twenty repeated edits to one block queue five affected chunks instead of immediately rebuilding 100 meshes. A frame budget limits starting additional chunk work; a single heavy chunk can still exceed the budget.
+
+AI requests retain bounded recent context, counting UTF-8 and JSON-escape bytes. Account feature/policy checks reject inherited object keys. Guest and profile text writes share path and size validation. These changes preserve existing app sandboxes and family controls. No paid database, public access change or new external runtime dependency is introduced.
