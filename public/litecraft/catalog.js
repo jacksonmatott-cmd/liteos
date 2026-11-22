@@ -35,12 +35,12 @@ export const BLOCKS=[
  block('Iron Ore','#b2957e','iron_ore',{hardness:3,tier:1,tool:'pickaxe',drop:'raw_iron'}),
  block('Diamond Ore','#74d7d6','diamond_ore',{hardness:3,tier:2,tool:'pickaxe',drop:'diamond'}),
  block('Ancient Debris','#65504a','ancient_debris_side',{top:'ancient_debris_top',bottom:'ancient_debris_top',hardness:30,tier:3,tool:'pickaxe'}),
- block('Crafting Table','#a87641','crafting_table_side',{top:'crafting_table_top',bottom:'wood',hardness:2.5,tool:'axe'}),
- block('Furnace','#777773','furnace_front',{top:'furnace_top',bottom:'furnace_top',hardness:3.5,tool:'pickaxe'}),
+ block('Crafting Table','#a87641','crafting_table_side',{front:'crafting_table_front',top:'crafting_table_top',bottom:'wood',hardness:2.5,tool:'axe'}),
+ block('Furnace','#777773','furnace_side',{front:'furnace_front',top:'furnace_top',bottom:'furnace_top',hardness:3.5,tool:'pickaxe'}),
  block('End Portal','#192b37','end_portal_frame_top',{solid:false,height:.1,hardness:Infinity}),
  block('Bedrock','#535353','bedrock',{hardness:Infinity,tier:4,tool:'pickaxe'}),
  block('TNT','#b75239','tnt_side',{top:'tnt_top',bottom:'tnt_bottom',hardness:0}),
- block('Chest','#a87531','oak_planks',{hardness:2.5,tool:'axe'}),
+ block('Chest','#a87531','chest_side',{front:'chest_front',top:'chest_top',bottom:'chest_bottom',hardness:2.5,tool:'axe'}),
  block('Farmland','#796044','dirt',{top:'farmland_moist',height:.9375,hardness:.6,tool:'shovel'}),
  block('Wheat','#70a43a','wheat_stage0',{solid:false,height:.4,hardness:0,drop:'seeds'}),
  block('Ripe Wheat','#d5b652','wheat_stage7',{solid:false,height:.9,hardness:0,drop:'wheat'}),
@@ -75,9 +75,22 @@ BLOCKS.push(
  block('Yellow Poplar Leaves','#d9b44e','yellow_poplar_leaves',{hardness:.2})
 );
 
+// Appended IDs preserve every block stored by earlier releases.
+BLOCKS.push(
+ block('Nether Gold Ore','#a96c38','nether_gold_ore',{hardness:3,tool:'pickaxe',drop:'gold_nugget'}),
+ block('Nether Quartz Ore','#ad887d','nether_quartz_ore',{hardness:3,tool:'pickaxe',drop:'quartz'}),
+ ...[['Coal','coal',0,'coal'],['Copper','copper',1,'raw_copper'],['Iron','iron',1,'raw_iron'],['Gold','gold',2,'raw_gold'],['Redstone','redstone',2,'redstone'],['Diamond','diamond',2,'diamond']].map(([name,key,tier,drop])=>block('Deepslate '+name+' Ore','#58616a','deepslate_'+key+'_ore',{hardness:4.5,tier,tool:'pickaxe',drop})),
+ block('Gravel','#918780','gravel',{hardness:.6,tool:'shovel'}),
+ block('Granite','#a57566','granite',{hardness:1.5,tool:'pickaxe'}),
+ block('Diorite','#c5c4bf','diorite',{hardness:1.5,tool:'pickaxe'}),
+ block('Andesite','#8c8e89','andesite',{hardness:1.5,tool:'pickaxe'}),
+ block('Blackstone','#342c33','blackstone',{hardness:1.5,tool:'pickaxe'}),
+ block('Basalt Pillar','#514c55','basalt_side',{top:'basalt_top',bottom:'basalt_top',hardness:1.25,tool:'pickaxe'})
+);
+
 const item=(name,texture,extra={})=>({name,texture,...extra});
 export const ITEMS={
- stick:item('Stick','stick'),raw_copper:item('Raw Copper','raw_copper'),raw_iron:item('Raw Iron','raw_iron'),raw_gold:item('Raw Gold','raw_gold'),
+ gold_nugget:item('Gold Nugget','gold_nugget'),quartz:item('Nether Quartz','quartz'),stick:item('Stick','stick'),raw_copper:item('Raw Copper','raw_copper'),raw_iron:item('Raw Iron','raw_iron'),raw_gold:item('Raw Gold','raw_gold'),
  copper_ingot:item('Copper Ingot','copper_ingot'),iron_ingot:item('Iron Ingot','iron_ingot'),gold_ingot:item('Gold Ingot','gold_ingot'),diamond:item('Diamond','diamond'),
  coal:item('Coal','coal'),redstone:item('Redstone Dust','redstone'),netherite_scrap:item('Netherite Scrap','netherite_scrap'),netherite_ingot:item('Netherite Ingot','netherite_ingot'),
  ender_pearl:item('Ender Pearl','ender_pearl'),blaze_powder:item('Blaze Powder','blaze_powder'),eye_of_ender:item('Eye of Ender','ender_eye'),
@@ -122,6 +135,7 @@ export const ALL_ITEMS={...ITEMS,...TOOLS,...ARMOR};
 const recipe=(key,name,cost,output)=>({key,name,cost,output});
 export const CRAFTS=[
  recipe('boards','Timber Boards',{'b:5':1},{'b:7':4}),
+ recipe('gold_from_nuggets','Gold Ingot',{'i:gold_nugget':9},{'i:gold_ingot':1}),
  recipe('sticks','Sticks',{'b:7':2},{'i:stick':4}),
  recipe('crafting_table','Crafting Table',{'b:7':4},{'b:31':1}),
  recipe('furnace','Furnace',{'b:3':8},{'b:32':1}),

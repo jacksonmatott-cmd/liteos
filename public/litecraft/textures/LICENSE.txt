@@ -3,3 +3,10 @@ Selected block textures were supplied by the project owner in 26.3.x-Template.zi
 This artwork is not covered by the application source license or Kenney CC0 license.
 LiteCraft is an independent project and is not an official Minecraft product.
 Not approved by or associated with Mojang or Microsoft.
+
+Mob geometry is adapted from Mojang/bedrock-samples, resource_pack/models/entity.
+https://github.com/Mojang/bedrock-samples
+(c) Mojang AB. All rights reserved. Sample files are subject to the Minecraft EULA:
+https://www.minecraft.net/en-us/eula
+The model importer, posing code and renderers are LiteOS code; the supplied skins
+and downloaded model data retain Mojang's copyright and are not open-licensed.

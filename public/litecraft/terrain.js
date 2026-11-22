@@ -1,4 +1,5 @@
 import {BIOMES,biomeAt,sampleLandscape} from './biomes.js';
+import {rockField} from './geology.js';
 import {BLOCKS} from './catalog.js';
 // Procedural chunks and sparse edits. Generated blocks are never part of a save.
 export const CHUNK=16,MIN_Y=-64,MAX_Y=320,WORLD_LIMIT=29999984,CHUNK_VOLUME=CHUNK*CHUNK*(MAX_Y-MIN_Y),CACHE_LIMIT=128;
@@ -9,10 +10,11 @@ export function column(seed,x,z,generator=1){if(generator>=2){const land=sampleL
 export const localIndex=(x,y,z)=>((y-MIN_Y)*CHUNK+z)*CHUNK+x;
 export function dimensionBounds(dimension){return dimension==='nether'?{min:0,max:128}:dimension==='end'?{min:0,max:256}:{min:MIN_Y,max:MAX_Y};}
 export function buildChunk(seed,cx,cz,patch={},dimension='overworld',generator=1){
+ const rock=rockField(seed,dimension);
  const blocks=new Uint8Array(CHUNK_VOLUME),tops=new Uint16Array(CHUNK*CHUNK),biomes=new Uint8Array(CHUNK*CHUNK),ox=cx*CHUNK,oz=cz*CHUNK;
  const put=(x,y,z,id,onlyAir=false)=>{x-=ox;z-=oz;if(x<0||z<0||x>=CHUNK||z>=CHUNK||y<MIN_Y||y>=MAX_Y)return;const i=localIndex(x,y,z);if(onlyAir&&blocks[i])return;blocks[i]=id;if(id)tops[z*CHUNK+x]=Math.max(tops[z*CHUNK+x],y-MIN_Y+1);};
  if(dimension==='nether'){
-  for(let z=0;z<CHUNK;z++)for(let x=0;x<CHUNK;x++){const wx=ox+x,wz=oz+z,h=Math.floor(23+noise(seed+141,wx,wz,26)*23);for(let y=0;y<128;y++){let id=y===0||y===127?34:y<=h||y>=116?16:y<=31?20:0;if(id===16&&y>3&&y<25&&random(seed+16,wx,wz,y)>.991)id=30;if(id===16&&y>15&&random(seed+17,wx,wz,y)>.98)id=44;if(y===115&&random(seed+18,wx,wz)>.9)id=13;put(wx,y,wz,id);}}
+  for(let z=0;z<CHUNK;z++)for(let x=0;x<CHUNK;x++){const wx=ox+x,wz=oz+z,h=Math.floor(23+noise(seed+141,wx,wz,26)*23);for(let y=0;y<128;y++){let id=y===0||y===127?34:y<=h||y>=116?16:y<=31?20:0;if(generator>=3&&id===16&&y>3&&y<116)id=rock(wx,y,wz,16);if(generator<3&&id===16&&y>3&&y<25&&random(seed+16,wx,wz,y)>.991)id=30;if(generator<3&&id===16&&y>15&&random(seed+17,wx,wz,y)>.98)id=44;if(y===115&&random(seed+18,wx,wz)>.9)id=13;put(wx,y,wz,id);}}
  }else if(dimension==='end'){
   for(let z=0;z<CHUNK;z++)for(let x=0;x<CHUNK;x++){const wx=ox+x,wz=oz+z,d=Math.hypot(wx,wz),island=d<170||d>650&&noise(seed+151,wx,wz,90)>.46;if(!island)continue;const h=Math.floor(58+noise(seed+152,wx,wz,35)*15);for(let y=Math.max(15,h-22);y<=h;y++)put(wx,y,wz,17);if(d<170&&Math.abs(wx)%37===0&&Math.abs(wz)%41===0)for(let y=h+1;y<h+16;y++)put(wx,y,wz,18);}
  }else{
@@ -20,7 +22,7 @@ export function buildChunk(seed,cx,cz,patch={},dimension='overworld',generator=1
   const wx=ox+x,wz=oz+z,land=column(seed,wx,wz,generator),{h}=land,top=generator>=2&&land.biome===8&&h>115?14:land.top;biomes[z*CHUNK+x]=land.biome||0;tops[z*CHUNK+x]=Math.max(h,64)-MIN_Y+1;
   for(let y=MIN_Y;y<=Math.max(h,64);y++){
    let id=y>h?10:y===MIN_Y?15:y===h?top:y>h-(land.biome===9?10:4)?(land.sub??(top===4?4:2)):y<0?15:3;
-   if((id===3||id===15)&&y>MIN_Y+3&&y<h-4){const r=random(seed,wx,wz,y);if(generator<2){if(r<.027)id=12;else if(r<.049)id=11;else if(noise(seed+93,wx+y*2,wz-y,8)>.84)id=0;}else if(r<.006&&y<0)id=29;else if(r<.014&&y<20)id=43;else if(r<.021&&y<35)id=44;else if(r<.037)id=12;else if(r<.057)id=28;else if(r<.078)id=11;else if(noise(seed+93,wx+y*2,wz-y,8)>.84)id=0;}
+   if((id===3||id===15)&&y>MIN_Y+3&&y<h-4){const r=random(seed,wx,wz,y);if(generator<2){if(r<.027)id=12;else if(r<.049)id=11;else if(noise(seed+93,wx+y*2,wz-y,8)>.84)id=0;}else if(generator>=3){if(noise(seed+93,wx+y*2,wz-y,8)>.84)id=0;else id=rock(wx,y,wz,id);}else if(r<.006&&y<0)id=29;else if(r<.014&&y<20)id=43;else if(r<.021&&y<35)id=44;else if(r<.037)id=12;else if(r<.057)id=28;else if(r<.078)id=11;else if(noise(seed+93,wx+y*2,wz-y,8)>.84)id=0;}
    if(generator>=2&&y===64&&id===10&&[3,5].includes(land.biome))id=53;blocks[localIndex(x,y,z)]=id;
   }
  }
