@@ -58,3 +58,5 @@
 .taskbar-apps{max-width:calc(100vw - 430px);overflow-x:auto;scrollbar-width:none}.taskbar-apps>button,.taskbar-divider{flex-shrink:0}
 @media(min-width:601px) and (max-width:1150px){.taskbar-apps{max-width:calc(100vw - 230px)}}
 @media(max-width:600px){.taskbar-apps{max-width:none}}
+
+.app-tile.litecraft{background:linear-gradient(145deg,#8caf63,#3b756a);color:white}

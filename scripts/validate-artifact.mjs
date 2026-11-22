@@ -15,7 +15,7 @@ JSON.parse(manifest);
 
 // A data URL forces ESM parsing even though the generated output has no package.json.
 const moduleUrl = `data:text/javascript;base64,${Buffer.from(source).toString("base64")}`;
-const workerModule = await import(moduleUrl);
+let workerModule;try{workerModule=await import(moduleUrl);}catch(error){console.error('Invalid Worker module: '+error.message);process.exit(1);}
 assert.equal(
   typeof workerModule.default?.fetch,
   "function",
@@ -62,5 +62,8 @@ for(const path of ['/desktop-ui.js','/desktop-state.js','/desktop.css']){
 }
 assert.match(await desktopResponse.text(),/href="\/desktop.css"/);
 const status=await workerModule.default.fetch(new Request('https://liteos.test/api/status'),{},{});
-assert.equal((await status.json()).version,'0.4.0');
+assert.equal((await status.json()).version,'0.5.0');
 console.log('Modern desktop assets are included; removed game routes and binaries are absent.');
+
+for(const path of ['/litecraft/index.html','/litecraft/game.js','/litecraft/world.js','/litecraft/vendor/three.module.js','/litecraft/vendor/three.core.js','/litecraft/textures/grass_top.png']){const r=await workerModule.default.fetch(new Request('https://liteos.test'+path),{},{});assert.equal(r.status,200);}
+console.log('LiteCraft app, renderer, and licensed textures are packaged.');

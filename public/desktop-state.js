@@ -1,5 +1,5 @@
 export const DEFAULT_START_PINS=Object.freeze(['files','browser','notes','write','sheets','photos','paint','calc','settings','assistant','apps','games']);
-const PINNABLE=new Set([...DEFAULT_START_PINS,'home','heroes3','store','terminal','security','remote','tasks','bin','google']);
+const PINNABLE=new Set([...DEFAULT_START_PINS,'home','heroes3','store','terminal','security','remote','tasks','bin','google','litecraft']);
 export function normalizePinnedApps(value){
  if(!Array.isArray(value))return [...DEFAULT_START_PINS];
  return [...new Set(value.filter(app=>typeof app==='string'&&PINNABLE.has(app)))].slice(0,24);

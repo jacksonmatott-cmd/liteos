@@ -1,4 +1,4 @@
-# LiteOS 0.4.0 — Your modern workspace
+# LiteOS 0.5.0 — Build your own island
 
 **A little lighter. A lot more you.**
 
@@ -15,6 +15,16 @@ LiteOS is a Windows-inspired browser desktop for computers, tablets, and phones.
 - Password-protected local parent and child profiles with separate file spaces. Passwords use salted PBKDF2-SHA256 hashes (210,000 iterations). There are no built-in passwords. Local profiles do not authenticate to GitHub or Google.
 - Parent-approved group policy changes and a local audit log for security-tool exports. Children have AI, Share, external websites, and installed game runtimes disabled by default. These are LiteOS interface controls; someone who administers the browser or device can inspect or change local storage. They do not manage Windows Group Policy, antivirus, a firewall, or the rest of the device.
 - **Settings → System → Danger** contains one button, **Clear Browser Data**. A same-family parent must enter their password. A one-use approval expires after 60 seconds. This removes **all LiteOS profiles, files, game libraries, and game saves on that browser**, plus its LiteOS preferences and cookies. It cannot clear other sites or the browser's entire history.
+
+## LiteCraft
+
+LiteCraft is an original single-player voxel sandbox, available from the desktop, Start, and Lite Apps. It uses Kenney’s CC0 Voxel Pack art and the MIT-licensed Three.js renderer, served locally with the application. It does not run Minecraft Java, use Mojang game assets, or import Minecraft worlds/mods.
+
+Create a seeded 96 × 96 × 48 island in Creative or Survival. Mine and place blocks, gather ores, craft building materials and a stone pickaxe, fly in Creative, and explore a ten-minute day/night cycle. Survival includes gravity, swimming, limited materials, and fall damage; this first prototype does not include mobs, farming, multiplayer, or Minecraft’s complete feature set.
+
+WASD moves, Space jumps, held left click mines, right click places, 1–9 select a slot, E opens inventory/crafting, F toggles Creative flight, and Escape pauses. Phones use a movement pad, drag-to-look, and action buttons. Fullscreen depends on browser support. WebGL2 provides accelerated graphics. A lower-detail Canvas software renderer is used when WebGL2 is unavailable.
+
+Worlds autosave in IndexedDB per LiteOS profile. Six worlds per profile are supported. Download a `.liteworld` backup from the pause menu and import it from the world menu; imports create a new copy. Guest storage stays local. The family game-runtime policy gates play; import and share policies gate restore/download. Parent-approved Clear Browser Data also clears LiteCraft worlds. Saves are separate from workspace `.litebackup` files.
 
 ## Desktop controls
 
