@@ -1,0 +1,74 @@
+{
+  "source": "Owner-supplied 26.3.x-Template.zip",
+  "copyright": "Mojang AB / Microsoft",
+  "files": {
+    "grass_top.png": {
+      "source": "assets/minecraft/textures/block/grass_block_top.png",
+      "sha256": "52f44b64ce884a13dfe35e4b4da2e35898b790dd4d7a5ea536f1b0c0d56d29b4"
+    },
+    "dirt_grass.png": {
+      "source": "assets/minecraft/textures/block/grass_block_side.png",
+      "sha256": "76a677640eb91d6a9aed844bc66e329b1894f89e241a0071333b6678c0854580"
+    },
+    "dirt.png": {
+      "source": "assets/minecraft/textures/block/dirt.png",
+      "sha256": "67197d5371efc3ca1638217c38349665dbd5a977b47bfb20075c858dff87d510"
+    },
+    "stone.png": {
+      "source": "assets/minecraft/textures/block/stone.png",
+      "sha256": "b5e10adc72442bfb257ce7ba0b9bbe36475a0c8cdfec89b80dc9517203ff3e9f"
+    },
+    "sand.png": {
+      "source": "assets/minecraft/textures/block/sand.png",
+      "sha256": "3be385d7e4402f24327dacbf7557d622e7d0cef4650e582457d144d90476f106"
+    },
+    "trunk_side.png": {
+      "source": "assets/minecraft/textures/block/oak_log.png",
+      "sha256": "61735859c9c9ea82601191a77c6f256d93619cbaf7cad998a3ed5762877a34e6"
+    },
+    "trunk_top.png": {
+      "source": "assets/minecraft/textures/block/oak_log_top.png",
+      "sha256": "a520800a833ea0c6214481245ab40397aa0c08b4ffc909046dac266386f9fc01"
+    },
+    "leaves.png": {
+      "source": "assets/minecraft/textures/block/oak_leaves.png",
+      "sha256": "69c9c7048695e014aee6b8a2c4cb080607bd7a2a5291c06218b8134cbfcdc04f"
+    },
+    "wood.png": {
+      "source": "assets/minecraft/textures/block/oak_planks.png",
+      "sha256": "65665943ef9c8bcf63fc67d2083ed0c50243f724106d0e4bb1abea5d921b16d3"
+    },
+    "brick_red.png": {
+      "source": "assets/minecraft/textures/block/bricks.png",
+      "sha256": "3242cb8e441c940156633b0d867e08c887ddaeaa32343b212d4b1e5ca3dae123"
+    },
+    "glass.png": {
+      "source": "assets/minecraft/textures/block/glass.png",
+      "sha256": "cb89c706dce86eac3123cef087d359b5f23098b658a468fb91662b4a9922bcd0"
+    },
+    "water.png": {
+      "source": "assets/minecraft/textures/block/water_still.png",
+      "sha256": "683df6ad9c23a50b7ce9323a5fe231aa79f94a63c6d750f3cf87a1fd44422551"
+    },
+    "stone_iron.png": {
+      "source": "assets/minecraft/textures/block/copper_ore.png",
+      "sha256": "3b102154c38a9cacb5f545b5102e2c09ec20e12830e6dfe5db88bdfd658b95f3"
+    },
+    "stone_coal.png": {
+      "source": "assets/minecraft/textures/block/coal_ore.png",
+      "sha256": "a24553e4cb9cfe70aae48fdb19d8205736135551301dc9c16ecca842d8dd3ae3"
+    },
+    "stone_gold.png": {
+      "source": "assets/minecraft/textures/block/glowstone.png",
+      "sha256": "1715e4d1e3209d5931f468b96fd67ca280e4ba27ce993aec6f66c57bf8bf369b"
+    },
+    "snow.png": {
+      "source": "assets/minecraft/textures/block/snow.png",
+      "sha256": "a9ca00fc88b23dce0d8e9ee2677d17e8b760a766dfc96ab4b301112908dc88cf"
+    },
+    "brick_grey.png": {
+      "source": "assets/minecraft/textures/block/deepslate.png",
+      "sha256": "dc72c722bec23c929817fab7cc56e08e5e828ae3607fbfb7e7730e68b67d4cfc"
+    }
+  }
+}

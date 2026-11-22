@@ -1,22 +1,5 @@
-
-###############################################################################
-
-
-	Voxel pack (base)
-	by Kenney Vleugels for Kenney (www.kenney.nl)
-
-			------------------------------
-
-	License (Creative Commons Zero, CC0)
-	http://creativecommons.org/publicdomain/zero/1.0/
-
-	You may use these graphics in personal and commercial projects.
-	Credit (Kenney or www.kenney.nl) would be nice but is not mandatory.
-
-			------------------------------
-
-	Donate:   http://donate.kenney.nl/
-	Request:  http://request.kenney.nl/
-
-
-###############################################################################
+Minecraft texture artwork © Mojang AB / Microsoft.
+Selected block textures were supplied by the project owner in 26.3.x-Template.zip.
+This artwork is not covered by the application source license or Kenney CC0 license.
+LiteCraft is an independent project and is not an official Minecraft product.
+Not approved by or associated with Mojang or Microsoft.

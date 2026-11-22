@@ -1,4 +1,4 @@
-# LiteOS 0.5.0 — Build your own island
+# LiteOS 0.6.0 — Beyond the horizon
 
 **A little lighter. A lot more you.**
 
@@ -18,13 +18,13 @@ LiteOS is a Windows-inspired browser desktop for computers, tablets, and phones.
 
 ## LiteCraft
 
-LiteCraft is an original single-player voxel sandbox, available from the desktop, Start, and Lite Apps. It uses Kenney’s CC0 Voxel Pack art and the MIT-licensed Three.js renderer, served locally with the application. It does not run Minecraft Java, use Mojang game assets, or import Minecraft worlds/mods.
+LiteCraft is an original single-player voxel sandbox, available from the desktop, Start, and Lite Apps. It uses the default Minecraft texture files supplied by the project owner in `26.3.x-Template.zip` and the MIT-licensed Three.js renderer. Grass, leaves and water receive biome color tints; animated water uses its first frame. Texture artwork is © Mojang / Microsoft, with source paths and checksums in `public/litecraft/textures/manifest.json`. LiteCraft is not an official Minecraft product and is not approved by or associated with Mojang or Microsoft. It does not run Minecraft Java or import Minecraft worlds/mods.
 
-Create a seeded 96 × 96 × 48 island in Creative or Survival. Mine and place blocks, gather ores, craft building materials and a stone pickaxe, fly in Creative, and explore a ten-minute day/night cycle. Survival includes gravity, swimming, limited materials, and fall damage; this first prototype does not include mobs, farming, multiplayer, or Minecraft’s complete feature set.
+Create a seeded open world in Creative or Survival. Terrain generates in 16 × 16 chunks as you travel, up to ±29,999,984 blocks horizontally, with a build range of Y −64 through 319. The cache holds at most 128 generated chunks (12 MiB of block bytes), while the renderer streams a smaller nearby region. Floating rendering coordinates preserve block precision far from the origin. Only edits and the seed are saved; previously visited unmodified terrain regenerates deterministically. Existing 96 × 96 × 48 island saves remain playable with their original boundaries; create a new world to use the streamed generator. Mine and place blocks, gather ores, craft building materials and a stone pickaxe, fly in Creative, and explore a ten-minute day/night cycle. Survival includes gravity, swimming, limited materials, and fall damage; this first prototype does not include mobs, farming, multiplayer, or Minecraft’s complete feature set.
 
 WASD moves, Space jumps, held left click mines, right click places, 1–9 select a slot, E opens inventory/crafting, F toggles Creative flight, and Escape pauses. Phones use a movement pad, drag-to-look, and action buttons. Fullscreen depends on browser support. WebGL2 provides accelerated graphics. A lower-detail Canvas software renderer is used when WebGL2 is unavailable.
 
-Worlds autosave in IndexedDB per LiteOS profile. Six worlds per profile are supported. Download a `.liteworld` backup from the pause menu and import it from the world menu; imports create a new copy. Guest storage stays local. The family game-runtime policy gates play; import and share policies gate restore/download. Parent-approved Clear Browser Data also clears LiteCraft worlds. Saves are separate from workspace `.litebackup` files.
+Worlds autosave in IndexedDB per LiteOS profile. Open-world backups use version 2 and store sparse block edits, with a 32 MB import limit; classic island version 1 backups are still accepted. Six worlds per profile are supported. Download a `.liteworld` backup from the pause menu and import it from the world menu; imports create a new copy. Guest storage stays local. The family game-runtime policy gates play; import and share policies gate restore/download. Parent-approved Clear Browser Data also clears LiteCraft worlds. Saves are separate from workspace `.litebackup` files.
 
 ## Desktop controls
 

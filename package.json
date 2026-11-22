@@ -1,6 +1,6 @@
 {
   "name": "liteos",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "private": true,
   "type": "module",
   "description": "LiteOS modern browser desktop with local family profiles, file storage and optional AI",

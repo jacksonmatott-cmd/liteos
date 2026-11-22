@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import {createHash} from 'node:crypto';
 import { readFile, readdir } from "node:fs/promises";
 import { resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -62,8 +63,15 @@ for(const path of ['/desktop-ui.js','/desktop-state.js','/desktop.css']){
 }
 assert.match(await desktopResponse.text(),/href="\/desktop.css"/);
 const status=await workerModule.default.fetch(new Request('https://liteos.test/api/status'),{},{});
-assert.equal((await status.json()).version,'0.5.0');
+assert.equal((await status.json()).version,'0.6.0');
 console.log('Modern desktop assets are included; removed game routes and binaries are absent.');
 
-for(const path of ['/litecraft/index.html','/litecraft/game.js','/litecraft/world.js','/litecraft/vendor/three.module.js','/litecraft/vendor/three.core.js','/litecraft/textures/grass_top.png']){const r=await workerModule.default.fetch(new Request('https://liteos.test'+path),{},{});assert.equal(r.status,200);}
-console.log('LiteCraft app, renderer, and licensed textures are packaged.');
+for(const path of ['/litecraft/index.html','/litecraft/game.js','/litecraft/world.js','/litecraft/terrain.js','/litecraft/textures.js','/litecraft/software.js','/litecraft/vendor/three.module.js','/litecraft/vendor/three.core.js','/litecraft/textures/grass_top.png']){const r=await workerModule.default.fetch(new Request('https://liteos.test'+path),{},{});assert.equal(r.status,200);}
+console.log('LiteCraft app, renderer, and texture assets are packaged.');
+
+const textureManifest=JSON.parse(await readFile(resolve(projectRoot,'public/litecraft/textures/manifest.json'),'utf8'));
+for(const [name,asset]of Object.entries(textureManifest.files)){
+ const r=await workerModule.default.fetch(new Request('https://liteos.test/litecraft/textures/'+name),{},{});assert.equal(r.status,200);assert.equal(r.headers.get('content-type'),'image/png');
+ const bytes=Buffer.from(await r.arrayBuffer());assert.equal(createHash('sha256').update(bytes).digest('hex'),asset.sha256);assert.equal(bytes.readUInt32BE(16),16);assert.equal(bytes.readUInt32BE(20),name==='water.png'?512:16);
+}
+console.log('All 17 supplied texture files match their source checksums and native pixel dimensions.');

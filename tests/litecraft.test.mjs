@@ -1,5 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {generate,spawnPoint,get,index,setBlock,raycast,collides,mine,place,craft,validateWorld,SIZE,HEIGHT,VOLUME,BLOCKS,RECIPES} from '../public/litecraft/world.js';
+import {generateLegacy as generate,spawnPoint,get,index,setBlock,raycast,collides,mine,place,craft,validateWorld,SIZE,HEIGHT,VOLUME,BLOCKS,RECIPES} from '../public/litecraft/world.js';
 test('seeded islands reproduce terrain, differ across seeds and spawn above solid ground',()=>{const a=generate('Harbor'),b=generate('Harbor'),c=generate('Summit');assert.deepEqual(a.blocks,b.blocks);assert.notDeepEqual(a.blocks,c.blocks);assert.equal(a.blocks.length,VOLUME);assert.equal(collides(a,a.player),false);assert.ok(a.blocks.includes(11));assert.ok(a.blocks.includes(12));assert.ok(a.blocks.includes(10));});
 function empty(){const w=generate('Test','survival');w.blocks.fill(0);return w;}
 test('voxel ray selection handles axis-aligned rays, correct placement normals and reach limits',()=>{const w=empty();setBlock(w,10,10,10,3);const hit=raycast(w,{x:10.5,y:10.5,z:14},{x:0,y:0,z:-1});assert.equal(hit.z,10);assert.deepEqual(hit.normal,[0,0,1]);assert.equal(raycast(w,{x:10.5,y:10.5,z:20},{x:0,y:0,z:-1}),null);});
